@@ -4,7 +4,7 @@ var express = require('express'),
 
 var server = http.createServer(app);
 var io = require('socket.io').listen(server);  //pass a http.Server instance
-server.listen(8081);  //listen on port 81
+server.listen(8082);  //listen on port 8082
 
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -13,15 +13,19 @@ app.use(function(req, res, next) {
 });
 
 
-app.use('/static', express.static('src/assets'))
+app.use('/static', express.static('../static'))
 
 app.get('/', function (req, res) {
   res.sendfile(__dirname + '/index.html');
 });
 
 io.on('connection', function (socket) {
-  socket.emit('news', { hello: 'world' });
-  socket.on('my other event', function (data) {
-    console.log(data);
-  });
+  socket.on('screen to admin', (data) => {
+  	console.log('received screen to admin', data)
+  	io.emit('screen to admin', data)
+  })
+  socket.on('admin to screen', (data) => {
+  	console.log('received admin to screen', data)
+  	io.emit('admin to screen', data)
+  })
 });

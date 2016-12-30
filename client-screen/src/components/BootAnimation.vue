@@ -22,7 +22,7 @@ Simulating montage...
       <AsciiImage :imagename="asciiName"></AsciiImage>
     </div>
 
-    <div id="title" v-if="step == 'title'">
+    <div id="title" v-bind:class="{inverted: titleInverted}" v-if="step == 'title'">
       <div>IMPROV</div>
       <div>GOD</div>
     </div>
@@ -57,11 +57,12 @@ function walkThroughFaces(data) {
 }
 
 var sounds = {
-  glitch01: new Howl({src:'http://localhost:8081/static/sounds/glitch01.ogg'}),
-  glitch02: new Howl({src:'http://localhost:8081/static/sounds/glitch02.ogg'}),
-  glitch03: new Howl({src:'http://localhost:8081/static/sounds/glitch03.ogg'}),
-  impact: new Howl({src:'http://localhost:8081/static/sounds/impact.ogg'}),
-  scanner: new Howl({src:'http://localhost:8081/static/sounds/scanner.ogg'}),
+  glitch01: new Howl({src:'http://localhost:8082/static/sounds/glitch01.ogg'}),
+  glitch02: new Howl({src:'http://localhost:8082/static/sounds/glitch02.ogg'}),
+  glitch03: new Howl({src:'http://localhost:8082/static/sounds/glitch03.ogg'}),
+  impact: new Howl({src:'http://localhost:8082/static/sounds/impact.ogg'}),
+  scanner: new Howl({src:'http://localhost:8082/static/sounds/scanner.ogg'}),
+  tinyglitch01: new Howl({src:'http://localhost:8082/static/sounds/tinyglitch01.ogg'}),
 }
 
 export default {
@@ -76,7 +77,8 @@ export default {
       step: 'greenFlash',
       asciiArt: '',
       asciiLoaded: false,
-      asciiName: 'nothing'
+      asciiName: 'nothing',
+      titleInverted: false
     }
   },
   mounted() {
@@ -111,6 +113,16 @@ export default {
       this.step = 'title'
       sounds.impact.play()
     }, 15000)
+    setTimeout(() => {
+      this.titleInverted = true
+      sounds.tinyglitch01.play();
+    }, 18000)
+    setTimeout(() => {
+      this.step = 'greenFlash'
+    }, 18100)
+    setTimeout(() => {
+      this.step = 'nothing'
+    }, 18300)
   }
 
 }

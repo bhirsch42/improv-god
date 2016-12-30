@@ -1,6 +1,8 @@
 <template>
   <div id="app">
-    <BootAnimation></BootAnimation>
+    <div v-if="step == 'boot'">
+      <BootAnimation></BootAnimation>      
+    </div>
   </div>
 </template>
 
@@ -8,30 +10,27 @@
 import BootAnimation from './components/BootAnimation'
 import io from 'socket.io-client'
 require('./Jscii.js')
-// typeWriter(fakeCode, 0)
 
+var socket = io.connect('http://localhost:8082');
 
-
-
-var socket = io.connect('http://localhost:8081');
-socket.on('news', function (data) {
-  console.log(data);
-  socket.emit('my other event', { my: 'data' });
-});
-
-// var client = new XMLHttpRequest();
-// client.open('GET', './assets/fake_code.js');
-// client.onreadystatechange = function() {
-//   console.log(client.responseText);
-// }
-// client.send();
-
+socket.emit('screen to admin', {message: "The screen sent this me!"})
 
 export default {
   name: 'app',
   components: {
     BootAnimation
   },
+  data() {
+    return {
+      step: 'nothing'
+    }
+  },
+  mounted() {
+    socket.on('admin to screen', (data) => {
+      console.log(data);
+      this.step = data.step
+    })
+  }
 }
 </script>
 
