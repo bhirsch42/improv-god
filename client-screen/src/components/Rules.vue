@@ -1,5 +1,5 @@
 <template>
-  <div id="rules" v-on:click="newRule">
+  <div id="rules">
     <div v-if="step == 'board'">
       <div id="board-title">
         Active Rules
@@ -20,7 +20,7 @@
           </div>
         </div>
         <div v-if="newRuleStep == 'read rule'">
-          <TypeAndSay :timeout="40">
+          <TypeAndSay :timeout="40" :doneReading="doneReading">
             {{ newRuleText }}
           </TypeAndSay>
         </div>
@@ -43,7 +43,15 @@ var data = {
   rules: [],
   step: 'board',
   newRuleStep: 'new rule',
-  newRuleText: ''
+  newRuleText: '',
+  doneReading() {
+    setTimeout(() => {
+      console.log('doneSpeaking');
+      data.newRuleStep = 'new rule'
+      data.step = 'board'
+      alert02.play();
+    }, 500);
+  }
 }
 
 function addRule(rule) {
@@ -57,11 +65,6 @@ function addRule(rule) {
   setTimeout(() => {
     data.newRuleStep = 'read rule'
   }, 1400)
-  setTimeout(() => {
-    data.newRuleStep = 'new rule'
-    data.step = 'board'
-    alert02.play();
-  }, 4000)
 }
 
 function removeRule() {
@@ -97,7 +100,7 @@ function randInd(arr) {
 
 function generateRule(args) {
   var names = args.names;
-  var ruleGens = args.ruleGens.wholeRules
+  var ruleData = args.ruleGens
 
   var improviser = () => {
     return random(names);
@@ -107,11 +110,21 @@ function generateRule(args) {
     return names.splice(1, randInd(names))[0]
   }
 
+  var getWord = category => {
+    return random(ruleData.wordLists[category]);
+  }
+
   var parseRuleGen = (ruleGen) => {
     return eval('`' + ruleGen + '`');
   }
+  console.log(ruleData);
+  var rule;
 
-  var rule = parseRuleGen(random(ruleGens))
+  if (Math.random() < .2) {
+    rule = parseRuleGen(random(ruleData.wholeRules));
+  } else {
+    rule = parseRuleGen(random(ruleData.listRules));
+  }
 
   return {text: rule, removing: false}
 }
@@ -174,11 +187,11 @@ export default {
 
   #board-title {
     position: absolute;
-    top: 15px;
+    top: 30px;
     left: 0;
-    height: 10vh;
+    height: 8vh;
 
-    padding-bottom: 5px;
+    padding-bottom: 0px;
     margin-left: 30px;
     border-bottom: 10px solid $green;
   }

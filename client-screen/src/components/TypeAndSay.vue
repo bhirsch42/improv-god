@@ -10,15 +10,29 @@
 	import TypeWriter from './TypeWriter.vue';
 	import _ from 'lodash';
 
-	function speak(text) {
+	function speak(text, doneReading) {
 		var utterance = new SpeechSynthesisUtterance(text)
+		if (doneReading) {
+			utterance.onend = doneReading;
+			console.log('onend assigned')
+		}
 		// utterance.voice = _.find(speechSynthesis.getVoices(), {name: 'Google US English'});
 		utterance.pitch = .1;
 		utterance.rate = .9;
+		console.log('utterance.onend', utterance.onend)
+		console.log('doneReading', doneReading);
 		speechSynthesis.speak(utterance);
 	}
 
 	var oldText = ''
+
+	var speakNewText = _.debounce((data) => {
+    let newText = data.$slots.default[0].text;
+    if (oldText != newText) {
+      oldText = newText;
+      speak(data.$slots.default[0].text, data.doneReading);
+    }		
+	}, 100);
 
 	export default {
 		name: 'type-and-say',
@@ -27,24 +41,17 @@
 		},
 	  props: {
 	    'timeout': {default: 70},
-	    'typingVolume': {default: .1}
+	    'typingVolume': {default: .1},
+	    'doneReading': {default(){}}
 	  },
 		data() {
 			return {};
 		},
 	  mounted() {
-	    let newText = this.$slots.default[0].text;
-	    if (oldText != newText) {
-	      oldText = newText;
-	      speak(this.$slots.default[0].text);
-	    }
+	  	speakNewText(this);
 	  },
 	  updated() {
-	    let newText = this.$slots.default[0].text;
-	    if (oldText != newText) {
-	      oldText = newText;
-	      speak(this.$slots.default[0].text);
-	    }
+	  	speakNewText(this);
 	  },
 	}
 </script>
