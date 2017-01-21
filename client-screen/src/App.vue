@@ -1,13 +1,21 @@
 <template>
   <div id="app">
-    <div v-if="step == 'boot'">
-      <BootAnimation></BootAnimation>      
+    <div v-if="step.current == 'boot'">
+      <BootAnimation :showStep="step"></BootAnimation>      
+    </div>
+    <div v-if="step.current == 'intro'">
+      <Intro :names="names" :step="step"></Intro>      
+    </div>
+    <div v-if="step.current == 'rules'">
+      <Rules :ruleGens="rules" :names="names"></Rules>      
     </div>
   </div>
 </template>
 
 <script>
 import BootAnimation from './components/BootAnimation'
+import Intro from './components/Intro'
+import Rules from './components/Rules'
 import io from 'socket.io-client'
 require('./Jscii.js')
 
@@ -18,17 +26,23 @@ socket.emit('screen to admin', {message: "The screen sent this me!"})
 export default {
   name: 'app',
   components: {
-    BootAnimation
+    BootAnimation,
+    Intro,
+    Rules
   },
   data() {
     return {
-      step: 'nothing'
+      step: {current: 'nothing'},
+      names: [],
+      rules: {}
     }
   },
   mounted() {
     socket.on('admin to screen', (data) => {
       console.log(data);
-      this.step = data.step
+      this.step.current = data.step;
+      this.names = data.names;
+      this.rules = data.rules;
     })
   }
 }

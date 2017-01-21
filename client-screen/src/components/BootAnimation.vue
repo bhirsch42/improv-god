@@ -57,6 +57,7 @@ function walkThroughFaces(data) {
 }
 
 var sounds = {
+  electricHum: new Howl({src:'http://localhost:8082/static/sounds/electricHum.ogg'}),
   glitch01: new Howl({src:'http://localhost:8082/static/sounds/glitch01.ogg'}),
   glitch02: new Howl({src:'http://localhost:8082/static/sounds/glitch02.ogg'}),
   glitch03: new Howl({src:'http://localhost:8082/static/sounds/glitch03.ogg'}),
@@ -71,7 +72,8 @@ export default {
     TypeWriter,
     AsciiImage
   },
-  data () {
+  props: ['showStep'],
+  data() {
     return {
       fakeCode: fakeCode,
       step: 'greenFlash',
@@ -82,6 +84,7 @@ export default {
     }
   },
   mounted() {
+    sounds.electricHum.play()
     setTimeout(() => {
       this.step = 'greenFlash'
       sounds.glitch01.play()
@@ -123,6 +126,9 @@ export default {
     setTimeout(() => {
       this.step = 'nothing'
     }, 18300)
+    setTimeout(() => {
+      this.showStep.current = 'intro'
+    }, 19500)
   }
 
 }

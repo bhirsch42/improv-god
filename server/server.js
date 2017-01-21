@@ -1,3 +1,4 @@
+var fs = require('fs');
 var http = require('http');
 var express = require('express'),
     app = module.exports.app = express();
@@ -19,12 +20,19 @@ app.get('/', function (req, res) {
   res.sendfile(__dirname + '/index.html');
 });
 
+var rules;
+fs.readFile('../static/rules.json', (err, data) => {
+  if (err) console.log(err);
+  rules = JSON.parse(data);
+})
+
 io.on('connection', function (socket) {
   socket.on('screen to admin', (data) => {
   	console.log('received screen to admin', data)
   	io.emit('screen to admin', data)
   })
   socket.on('admin to screen', (data) => {
+    data.rules = rules;
   	console.log('received admin to screen', data)
   	io.emit('admin to screen', data)
   })
