@@ -38,6 +38,7 @@ require('Howler')
 var alert01 = new Howl({src:'http://localhost:8082/static/sounds/alert01.ogg'})
 var alert02 = new Howl({src:'http://localhost:8082/static/sounds/alert02.ogg'})
 var sixBoops = new Howl({src:'http://localhost:8082/static/sounds/sixBoops.ogg'})
+var endSong = new Howl({src: 'http://localhost:8082/static/sounds/Who Likes to Party.mp3'})
 
 var data = {
   rules: [],
@@ -67,9 +68,8 @@ function addRule(rule) {
   }, 1400)
 }
 
-function removeRule() {
+function removeRule(rule) {
   sixBoops.play();
-  var rule = random(data.rules);
   setTimeout(() => {
     rule.removing = true;
   }, 0)
@@ -88,6 +88,10 @@ function removeRule() {
   setTimeout(() => {
     data.rules.splice(data.rules.indexOf(rule), 1);
   }, 3100)
+}
+
+function removeRandomRule() {
+  removeRule(random(data.rules));
 }
 
 function random(arr) {
@@ -120,7 +124,7 @@ function generateRule(args) {
   console.log(ruleData);
   var rule;
 
-  if (Math.random() < .2) {
+  if (Math.random() < .3) {
     rule = parseRuleGen(random(ruleData.wholeRules));
   } else {
     rule = parseRuleGen(random(ruleData.listRules));
@@ -128,6 +132,8 @@ function generateRule(args) {
 
   return {text: rule, removing: false}
 }
+
+var showOver = false;
 
 function doAction(action) {
   console.log('doAction', action)
@@ -141,8 +147,12 @@ function doAction(action) {
       }))
       break;
     case 'removeRule':
-      removeRule();
+      removeRandomRule();
       break;
+    case 'end show':
+      if (showOver) return;
+      showOver = true;
+      endSong.play();
   }
 }
 
@@ -158,13 +168,13 @@ export default {
   methods: {
     newRule() {
       sixBoops.play();
-      removeRule();
+      removeRandomRule();
     }
   },
   mounted() {
     data.ruleGens = this.ruleGens;
     data.names = this.names;
-    var strategy = new Strategies.Flip15(15 * 60 * 1000);
+    var strategy = new Strategies.Flip15(8 * 60 * 1000);
     setInterval(() => {
       doAction(strategy.getAction())
     }, 1000)

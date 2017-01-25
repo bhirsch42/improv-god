@@ -11,13 +11,20 @@ module.exports = {
 			var timeElapsed = Date.now() - this.timeCreated;
 			var timeSinceLastRule = Date.now() - this.timeOfLastRule;
 			var timeSinceLastFlip = Date.now() - this.timeOfLastFlip;
+			var percentComplete = timeElapsed / this.durationOfShow
+			if (timeElapsed > durationOfShow) {
+				return 'end show'
+			}
+			if (timeElapsed < 90 * 1000) {
+				return 'nothing'
+			}
 			if (timeSinceLastFlip > 15000) {
 				this.timeOfLastFlip = Date.now()
-				if (Math.random() < (1/8) * this.activeRules) {
+				if (Math.random() < (this.activeRules/(10*percentComplete + 2))) {
 					this.activeRules--;
 					return 'removeRule'
 				}
-				else if (Math.random() > .5) {
+				else if (Math.random() * percentComplete < .5) {
 					this.timeOfLastRule = Date.now();
 					this.activeRules++;
 					return 'addRule'
