@@ -22,3 +22,16 @@ Where `<BLANK>` is one of the following:
 
 ## After rule
 The second column of the spreadsheet tells the computer what to do **after it reads that rule**.
+
+## Until
+The third column of the spreadsheet tolls the computer when to stop doing the stuff you told it to do in the second column.
+
+---
+
+## Technical details
+
+All of the logic in the application is written in JavaScript.
+
+**Rule templates** are wrapped in tick marks, then run with `eval()`.
+The **After Rule** is just run with `eval()`
+The **Until** is run with `eval()` either on a timeout, or as a callback depending on the contents of the **After Rule**.
