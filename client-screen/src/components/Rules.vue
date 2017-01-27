@@ -26,6 +26,20 @@
         </div>
       </div>
     </div>
+    <div v-if="step == 'closer'">
+      <div id="closer" :class="{'flash-text': closerStep == 'closer title'}">
+        <div v-if="closerStep == 'closer title'">
+          <div class="flash-text">
+            CLOSER
+          </div>
+        </div>
+        <div v-if="closerStep == 'read closer'">
+          <TypeAndSay :timeout="40" :doneReading="closerFunc">
+            {{ closerText }}
+          </TypeAndSay>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -39,6 +53,7 @@ var alert01 = new Howl({src:'http://localhost:8082/static/sounds/alert01.ogg'})
 var alert02 = new Howl({src:'http://localhost:8082/static/sounds/alert02.ogg'})
 var sixBoops = new Howl({src:'http://localhost:8082/static/sounds/sixBoops.ogg'})
 var endSong = new Howl({src: 'http://localhost:8082/static/sounds/Who Likes to Party.mp3'})
+var heartOfCourage = new Howl({src: 'http://localhost:8082/static/sounds/heartOfCourage.mp3'})
 
 var data = {
   rules: [],
@@ -52,7 +67,10 @@ var data = {
       data.step = 'board'
       alert02.play();
     }, 500);
-  }
+  },
+  closerStep: 'closer title',
+  closerText: '',
+  closerFunc() {}
 }
 
 function addRule(rule) {
@@ -102,12 +120,25 @@ function randInd(arr) {
   return parseInt(Math.random() * arr.length);
 }
 
+function selectRule(rules) {
+  let r = Math.random()
+  for (var i = 0; i < rules.length; i++) {
+    if (rules[i].probCeil > r)
+      return rules[i];
+  }
+}
+
 function generateRule(args) {
   var names = args.names;
   var ruleData = args.ruleGens
+  console.log(ruleData)
 
   var improviser = () => {
     return random(names);
+  }
+
+  var improviserOrEveryone = () => {
+    return random(names.concat('everyone'));
   }
 
   var uniqueImproviser = () => {
@@ -115,28 +146,50 @@ function generateRule(args) {
   }
 
   var getWord = category => {
-    return random(ruleData.wordLists[category]);
+    return random(ruleData.words[category]);
   }
 
   var parseRuleGen = (ruleGen) => {
-    return eval('`' + ruleGen + '`');
+    return eval(ruleGen.template);
   }
-  console.log(ruleData);
-  var rule;
 
-  if (Math.random() < .3) {
-    rule = parseRuleGen(random(ruleData.wholeRules));
-  } else {
-    rule = parseRuleGen(random(ruleData.listRules));
-  }
+  let selectedRule = selectRule(ruleData.rules);
+  console.log('selected rule', selectedRule);
+  let rule = parseRuleGen(selectedRule);
 
   return {text: rule, removing: false}
 }
 
-var showOver = false;
+var closers = [
+  {
+    message: 'All rules deactivated. You have two epic minutes to end the scene.',
+    func() {
+      heartOfCourage.play();
+    }
+  }  
+]
+
+function closeShow() {
+  let closer = random(closers);
+  data.closerFunc = closer.func;
+
+  data.step = 'closer';
+  alert01.play();
+
+  setTimeout(() => {
+    data.closerText = closer.message
+  }, 1500)
+  setTimeout(() => {
+    data.closerStep = 'read closer'
+  }, 1400)
+
+}
+
+var closing = false;
 
 function doAction(action) {
   console.log('doAction', action)
+  if (closing) return;
   switch (action) {
     case 'default':
       break;
@@ -150,9 +203,8 @@ function doAction(action) {
       removeRandomRule();
       break;
     case 'end show':
-      if (showOver) return;
-      showOver = true;
-      endSong.play();
+      closing = true;
+      closeShow()
   }
 }
 
@@ -175,6 +227,8 @@ export default {
     data.ruleGens = this.ruleGens;
     data.names = this.names;
     var strategy = new Strategies.Flip15(8 * 60 * 1000);
+    var strategy = new Strategies.Every15(8 * 60 * 1000);
+    var strategy = new Strategies.JustClose(8 * 60 * 1000);
     setInterval(() => {
       doAction(strategy.getAction())
     }, 1000)

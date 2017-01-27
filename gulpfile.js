@@ -2,7 +2,8 @@ var gulp = require('gulp');
 var request = require('request');
 var shell = require('gulp-shell');
 var csv = require('csv');
-var jsonfile = require('jsonfile')
+var jsonfile = require('jsonfile');
+var _ = require('lodash');
 
 gulp.task('default', ['start-admin', 'start-screen', 'start-server'])
 
@@ -21,109 +22,91 @@ function getDataFromCsvUrl(url, callback) {
 }
 
 var rules = {
-  wordLists: {},
-  listRules: []
+  rules: [],
+  words: {}
+}
+
+function addNumVariations(rules) {
+  var names = ['Ben', 'Bret', 'Mark', 'Sara'] // Four is probably a good number, right?
+  var total;
+  var accum = 0;
+
+  var improviser = () => {
+    total *= names.length;
+  }
+
+  var improviserOrEveryone = () => {
+    total *= names.length + 1;
+  }
+
+  var uniqueImproviser = () => {
+    total *= names.length;
+  }
+
+  var lastCategory = '';
+
+  var getWord = category => {
+    lastCategory = category;
+    total *= rules.words[category].length;
+  }
+
+  rules.rules.forEach((rule, i) => {
+    total = 1;
+    try {
+      eval(rule.template);      
+    } catch(e) {
+      console.log('error in', i + 2, rule.template)
+      console.log('\t' + e.toString().split('\n')[0] + '\n\t' + 'last category: ' + lastCategory);
+    }
+    let probWidth = Math.log(total) / Math.log(10);
+    if (probWidth < 1) probWidth = 1;
+    accum += probWidth
+    rule.probCeil = accum;
+  })
+
+  // normalize
+  rules.rules.forEach((rule, i) => {
+    rule.probCeil /= rules.rules[rules.rules.length - 1].probCeil
+  })
+
+  jsonfile.writeFileSync('static/rules.json', rules);
 }
 
 gulp.task('get-rules', () => {
-  var markRulesUrl = 'https://docs.google.com/spreadsheets/d/1UaMHsNlbtQZrP4IbKN41OZfnOOz4Ws_djoXrCEf9i4g/pub?output=csv';
-  
-  getDataFromCsvUrl(markRulesUrl, data => {
-    var wholeRulesRaw = data;
-    var wholeRules = wholeRulesRaw.map(rule => {
-      return rule[0][0].toUpperCase() + rule[0].slice(1);
+  var rulesUrl = 'https://docs.google.com/spreadsheets/d/1UaMHsNlbtQZrP4IbKN41OZfnOOz4Ws_djoXrCEf9i4g/pub?output=csv';
+  var gotRules = false;
+  var gotWords = false;
+
+
+  getDataFromCsvUrl(rulesUrl, data => {
+    console.log('retrieved rules')
+    data.splice(0, 1);
+    rules.rules = data.map((rule) => {
+      return {
+        template: '`' + rule[0] + '`',
+        after: rule[1],
+        until: rule[2],
+      }
     })
-
-    rules.wholeRules = wholeRules
-
     jsonfile.writeFileSync('static/rules.json', rules);
+    console.log('wrote rules')
+    gotRules = true;
+    if (gotWords && gotRules) addNumVariations(rules);
   });
 
-  wordListUrls = [
-    {
-      category: 'locations',
-      url: 'https://docs.google.com/spreadsheets/d/1zHZqRK-fcK0Bv7wosGMR9s2sXhQG-ucuZADdeveWuEQ/pub?gid=0&single=true&output=csv'
-    },
-    {
-      category: 'emotions',
-      url: 'https://docs.google.com/spreadsheets/d/1zHZqRK-fcK0Bv7wosGMR9s2sXhQG-ucuZADdeveWuEQ/pub?gid=1164756710&single=true&output=csv'
-    },
-    {
-      category: 'objects',
-      url: 'https://docs.google.com/spreadsheets/d/1zHZqRK-fcK0Bv7wosGMR9s2sXhQG-ucuZADdeveWuEQ/pub?gid=1213680938&single=true&output=csv'
-    },
-    {
-      category: 'actions',
-      url: 'https://docs.google.com/spreadsheets/d/1zHZqRK-fcK0Bv7wosGMR9s2sXhQG-ucuZADdeveWuEQ/pub?gid=334126540&single=true&output=csv'
-    },
-    {
-      category: 'wants',
-      url: 'https://docs.google.com/spreadsheets/d/1zHZqRK-fcK0Bv7wosGMR9s2sXhQG-ucuZADdeveWuEQ/pub?gid=162824816&single=true&output=csv'
-    },
-    {
-      category: 'transitives',
-      url: 'https://docs.google.com/spreadsheets/d/1zHZqRK-fcK0Bv7wosGMR9s2sXhQG-ucuZADdeveWuEQ/pub?gid=1934984662&single=true&output=csv'
-    },
-    {
-      category: 'creatures',
-      url: 'https://docs.google.com/spreadsheets/d/1zHZqRK-fcK0Bv7wosGMR9s2sXhQG-ucuZADdeveWuEQ/pub?gid=1581990971&single=true&output=csv'
-    },
-    {
-      category: 'speaking styles',
-      url: 'https://docs.google.com/spreadsheets/d/1zHZqRK-fcK0Bv7wosGMR9s2sXhQG-ucuZADdeveWuEQ/pub?gid=1581990971&single=true&output=csv'
-    },
-    {
-      category: 'scene styles',
-      url: 'https://docs.google.com/spreadsheets/d/1zHZqRK-fcK0Bv7wosGMR9s2sXhQG-ucuZADdeveWuEQ/pub?gid=1581990971&single=true&output=csv'
-    },
-    {
-      category: 'stage actions',
-      url: 'https://docs.google.com/spreadsheets/d/1zHZqRK-fcK0Bv7wosGMR9s2sXhQG-ucuZADdeveWuEQ/pub?gid=1581990971&single=true&output=csv'
-    },
-    {
-      category: 'states of being',
-      url: 'https://docs.google.com/spreadsheets/d/1zHZqRK-fcK0Bv7wosGMR9s2sXhQG-ucuZADdeveWuEQ/pub?gid=1581990971&single=true&output=csv'
-    },
-    {
-      category: 'personality traits',
-      url: 'https://docs.google.com/spreadsheets/d/1zHZqRK-fcK0Bv7wosGMR9s2sXhQG-ucuZADdeveWuEQ/pub?gid=1581990971&single=true&output=csv'
-    },
-    {
-      category: 'physical affectations',
-      url: 'https://docs.google.com/spreadsheets/d/1zHZqRK-fcK0Bv7wosGMR9s2sXhQG-ucuZADdeveWuEQ/pub?gid=1975892510&single=true&output=csv'
-    },
-    {
-      category: 'body parts',
-      url: 'https://docs.google.com/spreadsheets/d/1zHZqRK-fcK0Bv7wosGMR9s2sXhQG-ucuZADdeveWuEQ/pub?gid=1975892510&single=true&output=csv'
-    },
-    {
-      category: 'equipment',
-      url: 'https://docs.google.com/spreadsheets/d/1zHZqRK-fcK0Bv7wosGMR9s2sXhQG-ucuZADdeveWuEQ/pub?gid=860946106&single=true&output=csv'
-    },
-    {
-      category: 'time increments',
-      url: 'https://docs.google.com/spreadsheets/d/1zHZqRK-fcK0Bv7wosGMR9s2sXhQG-ucuZADdeveWuEQ/pub?gid=860946106&single=true&output=csv'
-    },
-    {
-      category: 'specific characters',
-      url: 'https://docs.google.com/spreadsheets/d/1zHZqRK-fcK0Bv7wosGMR9s2sXhQG-ucuZADdeveWuEQ/pub?gid=603840422&single=true&output=csv'
-    }
-  ]
 
-  wordListUrls.forEach(o => {
-    getDataFromCsvUrl(o.url, data => {
-      let rule = data.splice(0, 1)
-      let list = data.map(cell => { 
-        return cell[0];
-      }).filter(text => {
-        return text.length > 0;
-      })
-      rules.wordLists[o.category] = list;
-      rules.listRules.push(rule[0][0]);
-      jsonfile.writeFileSync('static/rules.json', rules);
-    });    
-  })
+  var wordsUrl = 'https://docs.google.com/spreadsheets/d/1zHZqRK-fcK0Bv7wosGMR9s2sXhQG-ucuZADdeveWuEQ/pub?gid=0&single=true&output=csv'
 
-
-
+  getDataFromCsvUrl(wordsUrl, data => {
+    console.log('retrieved words')
+    var wordArrays = _.unzip(data);
+    wordArrays.forEach((wordArray) => {
+      let category = wordArray.splice(0, 1)[0];
+      rules.words[category] = wordArray.filter((word) => {return word.length > 0});
+    })
+    jsonfile.writeFileSync('static/rules.json', rules);
+    console.log('wrote words')
+    gotWords = true;
+    if (gotWords && gotRules) addNumVariations(rules);
+  });    
 })

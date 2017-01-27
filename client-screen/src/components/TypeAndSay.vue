@@ -14,13 +14,10 @@
 		var utterance = new SpeechSynthesisUtterance(text)
 		if (doneReading) {
 			utterance.onend = doneReading;
-			console.log('onend assigned')
 		}
 		// utterance.voice = _.find(speechSynthesis.getVoices(), {name: 'Google US English'});
 		utterance.pitch = .1;
 		utterance.rate = .9;
-		console.log('utterance.onend', utterance.onend)
-		console.log('doneReading', doneReading);
 		speechSynthesis.speak(utterance);
 	}
 
