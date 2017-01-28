@@ -9,6 +9,9 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "lodash": "^4.17.4",
+    "node-sass": "^4.3.0",
+    "sass-loader": "^4.1.1",
     "socket.io-client": "^1.7.2",
     "vue": "^2.1.0"
   },

@@ -227,8 +227,8 @@ export default {
     data.ruleGens = this.ruleGens;
     data.names = this.names;
     var strategy = new Strategies.Flip15(8 * 60 * 1000);
-    var strategy = new Strategies.Every15(8 * 60 * 1000);
-    var strategy = new Strategies.JustClose(8 * 60 * 1000);
+    // var strategy = new Strategies.Every15(8 * 60 * 1000);
+    // var strategy = new Strategies.JustClose(8 * 60 * 1000);
     setInterval(() => {
       doAction(strategy.getAction())
     }, 1000)
@@ -255,9 +255,10 @@ export default {
     left: 0;
     height: 8vh;
 
-    padding-bottom: 0px;
+    font-size: 10vh;
+    padding-bottom: 5px;
     margin-left: 30px;
-    border-bottom: 10px solid $green;
+    border-bottom: 1vh solid $green;
   }
 
   #board {

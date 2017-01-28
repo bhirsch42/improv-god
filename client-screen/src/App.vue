@@ -1,13 +1,16 @@
 <template>
   <div id="app">
     <div v-if="step.current == 'boot'">
-      <BootAnimation :showStep="step"></BootAnimation>      
+      <BootAnimation :showStep="step"></BootAnimation>
     </div>
     <div v-if="step.current == 'intro'">
-      <Intro :names="names" :step="step"></Intro>      
+      <Intro :names="names" :step="step"></Intro>
     </div>
     <div v-if="step.current == 'rules'">
-      <Rules :ruleGens="rules" :names="names"></Rules>      
+      <Rules :ruleGens="rules" :names="names"></Rules>
+    </div>
+    <div v-if="step.current == 'simulate'">
+      <Simulation :ruleGens="rules" :names="names"></Simulation>
     </div>
   </div>
 </template>
@@ -16,6 +19,7 @@
 import BootAnimation from './components/BootAnimation'
 import Intro from './components/Intro'
 import Rules from './components/Rules'
+import Simulation from './components/Simulation'
 import io from 'socket.io-client'
 require('./Jscii.js')
 
@@ -28,11 +32,18 @@ export default {
   components: {
     BootAnimation,
     Intro,
-    Rules
+    Rules,
+    Simulation
   },
   data() {
     return {
-      step: {current: 'nothing'},
+      step: {
+        current: 'nothing',
+        set(s) {
+          this.current = s;
+          socket.emit('screen to admin', {showStep: this.current});
+        }
+      },
       names: [],
       rules: {}
     }
@@ -40,7 +51,7 @@ export default {
   mounted() {
     socket.on('admin to screen', (data) => {
       console.log(data);
-      this.step.current = data.step;
+      this.step.set(data.step);
       this.names = data.names;
       this.rules = data.rules;
     })

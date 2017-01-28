@@ -127,7 +127,7 @@ export default {
       this.step = 'nothing'
     }, 18300)
     setTimeout(() => {
-      this.showStep.current = 'intro'
+      this.showStep.set('intro');
     }, 19500)
   }
 

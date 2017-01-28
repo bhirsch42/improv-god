@@ -63,7 +63,7 @@
 				total += o[0];
 			});
 			setTimeout(() => {
-				this.step.current = 'rules';
+				this.step.set('rules');
 			}, total);
 		}
 	}

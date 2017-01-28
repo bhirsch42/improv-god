@@ -7,11 +7,14 @@ module.exports = {
 		this.timeOfLastRule = 0;
 		this.timeOfLastFlip = 0;
 
-		this.getAction = () => {
-			var timeElapsed = Date.now() - this.timeCreated;
-			var timeSinceLastRule = Date.now() - this.timeOfLastRule;
-			var timeSinceLastFlip = Date.now() - this.timeOfLastFlip;
-			var percentComplete = timeElapsed / this.durationOfShow
+		this.getAction = (timeElapsed) => {
+			if (!timeElapsed) {
+				timeElapsed = Date.now() - this.timeCreated;;
+			}
+			var timeSinceLastRule = timeElapsed - this.timeOfLastRule;
+			var timeSinceLastFlip = timeElapsed - this.timeOfLastFlip;
+			var percentComplete = timeElapsed / this.durationOfShow;
+			var perComSq = (timeElapsed * timeElapsed) / (this.durationOfShow * this.durationOfShow);
 			if (timeElapsed > durationOfShow) {
 				return 'end show'
 			}
@@ -19,18 +22,26 @@ module.exports = {
 				return 'nothing'
 			}
 			if (timeSinceLastFlip > 15000) {
-				this.timeOfLastFlip = Date.now()
-				if (Math.random() < (this.activeRules/(10*percentComplete + 2))) {
-					this.activeRules--;
-					return 'removeRule'
-				}
-				else if (Math.random() * percentComplete < .5) {
-					this.timeOfLastRule = Date.now();
+				this.timeOfLastFlip = timeElapsed
+
+				let removeOdds = Math.pow(this.activeRules, 3) + 4;
+				let addOdds = perComSq * 30 + 4;
+				let nothingOdds = Math.max((1 - percentComplete) * 15 - (timeSinceLastRule / (150 * 1000)) * 15, 2);
+
+				let sum = removeOdds + addOdds + nothingOdds;
+				let removeBound = removeOdds / sum;
+				let addBound = addOdds / sum + removeBound;
+
+				let r = Math.random()
+				if (r < removeBound) {
+					if (this.activeRules > 0) {
+						this.activeRules--;
+						return 'removeRule'
+					}
+				} else if (r < addBound) {
+					this.timeOfLastRule = timeElapsed;
 					this.activeRules++;
 					return 'addRule'
-				}
-				else {
-					return 'nothing'
 				}
 			}
 			return 'nothing';
