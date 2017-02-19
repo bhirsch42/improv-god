@@ -50,10 +50,15 @@ export default {
   },
   mounted() {
     socket.on('admin to screen', (data) => {
-      console.log(data);
+      let s = data.showStep;
+
       this.step.set(data.step);
       this.names = data.names;
       this.rules = data.rules;
+
+      if (s != 'nothing' && this.step.current == 'nothing') {
+        location.reload()
+      }
     })
   }
 }

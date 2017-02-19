@@ -162,9 +162,9 @@ function generateRule(args) {
 
 var closers = [
   {
-    message: 'All rules deactivated. You have two epic minutes to end the scene.',
+    message: 'The show is over. Congratulations.',
     func() {
-      heartOfCourage.play();
+      endSong.play();
     }
   }  
 ]
@@ -226,7 +226,7 @@ export default {
   mounted() {
     data.ruleGens = this.ruleGens;
     data.names = this.names;
-    var strategy = new Strategies.Flip15(8 * 60 * 1000);
+    var strategy = new Strategies.Flip15(10 * 60 * 1000);
     // var strategy = new Strategies.Every15(8 * 60 * 1000);
     // var strategy = new Strategies.JustClose(8 * 60 * 1000);
     setInterval(() => {

@@ -24,9 +24,10 @@ module.exports = {
 			if (timeSinceLastFlip > 15000) {
 				this.timeOfLastFlip = timeElapsed
 
-				let removeOdds = Math.pow(this.activeRules, 3) + 4;
+				let removeOdds = (Math.pow(this.activeRules, 3) + 4) * ((1-perComSq) * .8 + .2);
 				let addOdds = perComSq * 30 + 4;
-				let nothingOdds = Math.max((1 - percentComplete) * 15 - (timeSinceLastRule / (150 * 1000)) * 15, 2);
+				let nothingOdds = Math.max(1 - (timeSinceLastRule / (90 * 1000)), 0) * ((1 - percentComplete) * 100)
+
 
 				let sum = removeOdds + addOdds + nothingOdds;
 				let removeBound = removeOdds / sum;

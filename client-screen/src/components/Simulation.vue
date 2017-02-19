@@ -26,7 +26,7 @@
 	}
 
 	function simulateShow() {
-		var strategy = new Strategies.Flip15(15 * 60 * 1000);
+		var strategy = new Strategies.Flip15(120 * 60 * 1000);
 		var actions = []
 		for (let i = 0; i < strategy.durationOfShow + 2; i++) {
 			let action = strategy.getAction(i);
