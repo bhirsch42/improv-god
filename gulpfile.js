@@ -12,10 +12,20 @@ gulp.task('default', () => {
   exec('node server.js', {'cwd': './server'});
 })
 
-gulp.task('install', () => {
-  exec('yarn', {'cwd': './client-admin'});
-  exec('yarn', {'cwd': './client-screen'});
-  exec('yarn', {'cwd': './server'});
+gulp.task('install', (done) => {
+
+  callbackCounter = 0
+
+  cb = () => {
+    callbackCounter++;
+    if (callbackCounter == 3) {
+      done()
+    }
+  }
+
+  exec('yarn', {'cwd': './client-admin'}, cb);
+  exec('yarn', {'cwd': './client-screen'}, cb);
+  exec('yarn', {'cwd': './server'}, cb);  
 })
 
 // gulp.task('install-admin', shell.task(['yarn'], {'cwd': './client-admin'}))
