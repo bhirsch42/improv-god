@@ -1,24 +1,26 @@
 var gulp = require('gulp');
 var request = require('request');
-var shell = require('gulp-shell');
+var exec = require('child_process').exec;
 var runSequence = require('run-sequence')
 var csv = require('csv');
 var jsonfile = require('jsonfile');
 var _ = require('lodash');
 
-gulp.task('default', ['start-admin', 'start-screen', 'start-server'])
-
-gulp.task('install', () => {
-  runSequence('install-admin', 'install-screen', 'install-server');
+gulp.task('default', () => {
+  exec('yarn run dev', {'cwd': './client-admin'});
+  exec('yarn run dev', {'cwd': './client-screen'});
+  exec('node server.js', {'cwd': './server'});
 })
 
-gulp.task('start-admin', shell.task(['yarn run dev'], {'cwd': './client-admin'}))
-gulp.task('start-screen', shell.task(['yarn run dev'], {'cwd': './client-screen'}))
-gulp.task('start-server', shell.task(['node server.js'], {'cwd': './server'}))
+gulp.task('install', () => {
+  exec('yarn', {'cwd': './client-admin'});
+  exec('yarn', {'cwd': './client-screen'});
+  exec('yarn', {'cwd': './server'});
+})
 
-gulp.task('install-admin', shell.task(['yarn'], {'cwd': './client-admin'}))
-gulp.task('install-screen', shell.task(['yarn'], {'cwd': './client-screen'}))
-gulp.task('install-server', shell.task(['yarn'], {'cwd': './server'}))
+// gulp.task('install-admin', shell.task(['yarn'], {'cwd': './client-admin'}))
+// gulp.task('install-screen', shell.task(['yarn'], {'cwd': './client-screen'}))
+// gulp.task('install-server', shell.task(['yarn'], {'cwd': './server'}))
 
 function getDataFromCsvUrl(url, callback) {
   request(url, (error, response, body) => {
