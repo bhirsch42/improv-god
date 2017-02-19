@@ -1,13 +1,16 @@
 var gulp = require('gulp');
 var request = require('request');
 var shell = require('gulp-shell');
+var runSequence = require('run-sequence')
 var csv = require('csv');
 var jsonfile = require('jsonfile');
 var _ = require('lodash');
 
 gulp.task('default', ['start-admin', 'start-screen', 'start-server'])
 
-gulp.task('install', ['install-admin', 'install-screen', 'install-server'])
+gulp.task('install', () => {
+  runSequence('install-admin', 'install-screen', 'install-server');
+})
 
 gulp.task('start-admin', shell.task(['yarn run dev'], {'cwd': './client-admin'}))
 gulp.task('start-screen', shell.task(['yarn run dev'], {'cwd': './client-screen'}))
