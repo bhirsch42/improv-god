@@ -7,19 +7,19 @@ An AI host for your improv show.
 Installing Improv God requires [npm](https://www.npmjs.com/).
  1. If you haven't already, install [yarn](https://code.facebook.com/posts/1840075619545360) globally.
 
-    npm install -g yarn
+    `npm install -g yarn`
  2. Clone the repository
 
-    git clone https://github.com/bhirsch42/improv-god.git
+    `git clone https://github.com/bhirsch42/improv-god.git`
  3. Navigate into the project
     
-    cd improv-god/
+    `cd improv-god/`
  4. Run yarn
 
-    yarn
+    `yarn`
  5. Run gulp install.
 
-    gulp install
+    `gulp install`
 
 ##Running Improv God
 To start up the program on your machine, run `gulp` in the project directory.
