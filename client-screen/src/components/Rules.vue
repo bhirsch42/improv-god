@@ -70,7 +70,7 @@ var data = {
   },
   closerStep: 'closer title',
   closerText: '',
-  lastImproviser: '',
+  lastImproviser: {},
   closerFunc() {}
 }
 
@@ -131,13 +131,14 @@ function selectRule(rules) {
 
 function generateRule() {
   var names = data.names
+  var improvisers = data.improvisers
   var ruleData = data.ruleGens
   console.log(ruleData)
 
   var improviser = () => {
-    var choice = random(names);
+    var choice = random(improvisers);
     data.lastImproviser = choice
-    return choice
+    return choice.name
   }
 
   var improviserOrEveryone = () => {
@@ -149,8 +150,8 @@ function generateRule() {
     do {
       var choice = improviser()
       count++
-    } while (count < 20 && choice == data.lastImproviser)
-    return choice
+    } while (count < 20 && choice.name == data.lastImproviser.name)
+    return choice.name
   }
 
   var getWord = category => {
@@ -217,7 +218,7 @@ function doAction(action) {
 
 export default {
   name: 'rules',
-  props: ['ruleGens', 'names'],
+  props: ['ruleGens', 'names', 'improvisers'],
   data() {
     return data
   },
@@ -233,6 +234,7 @@ export default {
   mounted() {
     data.ruleGens = this.ruleGens;
     data.names = this.names;
+    data.improvisers = this.improvisers;
     var strategy = new Strategies.Flip15(10 * 60 * 1000);
     // var strategy = new Strategies.Every15(8 * 60 * 1000);
     // var strategy = new Strategies.JustClose(8 * 60 * 1000);

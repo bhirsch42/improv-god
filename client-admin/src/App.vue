@@ -9,9 +9,11 @@
       <button :class="{running: showStep == 'simulate'}" v-on:click="step('simulate')">Simulate</button>
     </div>
     <div id="improviser-names">
-      Names of Improvisers
+      Tonight's Improvisers
       <div v-for="improviser, i in improvisers">
         {{ i + 1 }}) <input type="text" v-model="improviser.name" v-on:keyup="addImproviserSlot">
+        <label><input type="radio" v-model="improviser.gender" value="male" /> Male</label>
+        <label><input type="radio" v-model="improviser.gender" value="female" /> Female</label>
       </div >
     </div>
   </div>
@@ -23,7 +25,7 @@ import io from 'socket.io-client'
 import _ from 'lodash'
 
 var data = {
-  improvisers: [{name: ''}],
+  improvisers: [{name: '', gender:'male'}],
   showStep: 'nothing'
 }
 
@@ -47,6 +49,7 @@ export default {
     step(message) {
       socket.emit('admin to screen', {
         step: message,
+        improvisers: this.improvisers.filter(o => o.name.length > 0),
         names: (
           this.improvisers.map((o) => {
             return o.name;
@@ -59,7 +62,7 @@ export default {
     addImproviserSlot(e) {
       console.log('addImproviserSlot')
       if (this.improvisers[this.improvisers.length - 1].name.length > 0) {
-        this.improvisers.push({name: ''});
+        this.improvisers.push({name: '', gender: 'male'});
       }
     }
   }

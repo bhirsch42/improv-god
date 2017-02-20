@@ -7,7 +7,7 @@
       <Intro :names="names" :step="step"></Intro>
     </div>
     <div v-if="step.current == 'rules'">
-      <Rules :ruleGens="rules" :names="names"></Rules>
+      <Rules :ruleGens="rules" :names="names" :improvisers="improvisers"></Rules>
     </div>
     <div v-if="step.current == 'simulate'">
       <Simulation :ruleGens="rules" :names="names"></Simulation>
@@ -45,7 +45,8 @@ export default {
         }
       },
       names: [],
-      rules: {}
+      rules: {},
+      improvisers: []
     }
   },
   mounted() {
@@ -55,6 +56,7 @@ export default {
       this.step.set(data.step);
       this.names = data.names;
       this.rules = data.rules;
+      this.improvisers = data.improvisers;
 
       if (s != 'nothing' && this.step.current == 'nothing') {
         location.reload()
