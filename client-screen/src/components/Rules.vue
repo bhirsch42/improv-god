@@ -8,7 +8,7 @@
         <div v-for="rule in rules">
           <div class="rule" :class="{removing: rule.removing}">
             {{ rule.text }}
-          </div>      
+          </div>
         </div>
       </div>
     </div>
@@ -124,13 +124,13 @@ function selectRule(rules) {
   let r = Math.random()
   for (var i = 0; i < rules.length; i++) {
     if (rules[i].probCeil > r)
-      return rules[i];
+      return i;
   }
 }
 
-function generateRule(args) {
-  var names = args.names;
-  var ruleData = args.ruleGens
+function generateRule() {
+  var names = data.names
+  var ruleData = data.ruleGens
   console.log(ruleData)
 
   var improviser = () => {
@@ -153,7 +153,9 @@ function generateRule(args) {
     return eval(ruleGen.template);
   }
 
-  let selectedRule = selectRule(ruleData.rules);
+  let selectedRuleIdx = selectRule(ruleData.rules);
+  let selectedRule = ruleData.rules[selectedRuleIdx]
+  data.ruleGens.rules.splice(selectedRuleIdx, 1)
   console.log('selected rule', selectedRule);
   let rule = parseRuleGen(selectedRule);
 
@@ -166,7 +168,7 @@ var closers = [
     func() {
       endSong.play();
     }
-  }  
+  }
 ]
 
 function closeShow() {
@@ -194,10 +196,7 @@ function doAction(action) {
     case 'default':
       break;
     case 'addRule':
-      addRule(generateRule({
-        ruleGens: data.ruleGens,
-        names: data.names
-      }))
+      addRule(generateRule())
       break;
     case 'removeRule':
       removeRandomRule();
@@ -304,19 +303,19 @@ export default {
   }
 
   @keyframes flash-text{
-    1% {background-color: black; color: $green;} 
+    1% {background-color: black; color: $green;}
 
-    24% {background-color: black; color: $green;} 
-    25% {background-color: $green; color: black;} 
+    24% {background-color: black; color: $green;}
+    25% {background-color: $green; color: black;}
 
-    49% {background-color: $green; color: black;} 
-    50% {background-color: black; color: $green;} 
+    49% {background-color: $green; color: black;}
+    50% {background-color: black; color: $green;}
 
-    74% {background-color: black; color: $green;} 
-    75% {background-color: $green; color: black;} 
+    74% {background-color: black; color: $green;}
+    75% {background-color: $green; color: black;}
 
-    99% {background-color: $green; color: black;} 
-    100% {background-color: black; color: $green;} 
+    99% {background-color: $green; color: black;}
+    100% {background-color: black; color: $green;}
   }
 
 </style>
