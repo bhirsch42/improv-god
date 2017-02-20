@@ -70,6 +70,7 @@ var data = {
   },
   closerStep: 'closer title',
   closerText: '',
+  lastImproviser: '',
   closerFunc() {}
 }
 
@@ -134,7 +135,9 @@ function generateRule() {
   console.log(ruleData)
 
   var improviser = () => {
-    return random(names);
+    var choice = random(names);
+    data.lastImproviser = choice
+    return choice
   }
 
   var improviserOrEveryone = () => {
@@ -142,7 +145,12 @@ function generateRule() {
   }
 
   var uniqueImproviser = () => {
-    return names.splice(1, randInd(names))[0]
+    var count = 0;
+    do {
+      var choice = improviser()
+      count++
+    } while (count < 20 && choice == data.lastImproviser)
+    return choice
   }
 
   var getWord = category => {
