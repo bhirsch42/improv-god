@@ -3,13 +3,13 @@
     <div v-if="step == 'board'">
       <div id="board-title">
         Active Rules
-        <small>
+<!--         <small>
           <span>|</span>
           <span v-on:click="doAction('addRule')">Add Rule</span>
           <span>|</span>
           <span v-on:click="doAction('removeRule')">Remove Rule</span>
         </small>
-      </div>
+ -->      </div>
       <div id="board">
         <div v-for="rule in rules">
           <div class="rule" :class="{removing: rule.removing}">
@@ -326,12 +326,12 @@ export default {
   mounted() {
     data.ruleGens = this.ruleGens;
     data.improvisers = this.improvisers;
-    // var strategy = new Strategies.Flip15(10 * 60 * 1000);
+    var strategy = new Strategies.Flip15(10 * 60 * 1000);
     // var strategy = new Strategies.Every15(8 * 60 * 1000);
-    // // var strategy = new Strategies.JustClose(8 * 60 * 1000);
-    // setInterval(() => {
-    //   doAction(strategy.getAction())
-    // }, 1000)
+    // var strategy = new Strategies.JustClose(8 * 60 * 1000);
+    setInterval(() => {
+      doAction(strategy.getAction())
+    }, 1000)
   }
 }
 </script>
