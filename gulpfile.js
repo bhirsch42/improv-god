@@ -86,11 +86,11 @@ function addNumVariations(rules) {
   var accum = 0;
 
   var improviser = () => {
-    total *= names.length;
+    total = total
   }
 
-  var improviserOrEveryone = () => {
-    total *= names.length + 1;
+  var pronoun = () => {
+    total = total
   }
 
   var uniqueImproviser = () => {
@@ -138,8 +138,9 @@ gulp.task('get-rules', () => {
     rules.rules = data.map((rule) => {
       return {
         template: '`' + rule[0] + '`',
-        after: rule[1],
-        until: rule[2],
+        reverseTemplate: '`' + rule[1] + '`',
+        after: rule[2],
+        until: rule[3],
       }
     })
     jsonfile.writeFileSync('static/rules.json', rules);

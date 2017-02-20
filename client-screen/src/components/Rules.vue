@@ -3,6 +3,12 @@
     <div v-if="step == 'board'">
       <div id="board-title">
         Active Rules
+        <small>
+          <span>|</span>
+          <span v-on:click="doAction('addRule')">Add Rule</span>
+          <span>|</span>
+          <span v-on:click="doAction('removeRule')">Remove Rule</span>
+        </small>
       </div>
       <div id="board">
         <div v-for="rule in rules">
@@ -12,19 +18,20 @@
         </div>
       </div>
     </div>
-    <div v-if="step == 'new rule'">
-      <div id="new-rule" :class="{'flash-text': newRuleStep == 'new rule'}">
-        <div v-if="newRuleStep == 'new rule'">
-          <div class="flash-text">
-            NEW RULE
-          </div>
-        </div>
-        <div v-if="newRuleStep == 'read rule'">
-          <TypeAndSay :timeout="40" :doneReading="doneReading">
-            {{ newRuleText }}
-          </TypeAndSay>
-        </div>
+    <div v-if="step == 'new rule'" id="new-rule">
+      <div class="flash-text">
+        NEW RULE
       </div>
+    </div>
+    <div v-if="step == 'remove rule'" id="new-rule">
+      <div class="flash-text">
+        REMOVING RULE
+      </div>
+    </div>
+    <div v-if="step == 'read rule'">
+      <TypeAndSay :timeout="40" :doneReading="doneReading">
+        {{ readRuleText }}
+      </TypeAndSay>
     </div>
     <div v-if="step == 'closer'">
       <div id="closer" :class="{'flash-text': closerStep == 'closer title'}">
@@ -51,58 +58,67 @@ import Strategies from '../utils/Strategies.js'
 require('Howler')
 var alert01 = new Howl({src:'http://localhost:8082/static/sounds/alert01.ogg'})
 var alert02 = new Howl({src:'http://localhost:8082/static/sounds/alert02.ogg'})
-var sixBoops = new Howl({src:'http://localhost:8082/static/sounds/sixBoops.ogg'})
+var threeBeeps = new Howl({src:'http://localhost:8082/static/sounds/threeBeeps.ogg'})
+var oneBoop = new Howl({src:'http://localhost:8082/static/sounds/oneBoop.ogg'})
 var endSong = new Howl({src: 'http://localhost:8082/static/sounds/Who Likes to Party.mp3'})
 var heartOfCourage = new Howl({src: 'http://localhost:8082/static/sounds/heartOfCourage.mp3'})
+
+
+var addRuleDoneReading = () => {
+  setTimeout(() => {
+    console.log('doneSpeaking');
+    data.step = 'board'
+    alert02.play();
+  }, 500);
+}
+
+var removeRuleDoneReading = () => {
+  setTimeout(() => {
+    console.log('doneSpeaking REMOVE RULE');
+    data.step = 'board'
+    oneBoop.play();
+  }, 500);
+}
 
 var data = {
   rules: [],
   step: 'board',
-  newRuleStep: 'new rule',
-  newRuleText: '',
-  doneReading() {
-    setTimeout(() => {
-      console.log('doneSpeaking');
-      data.newRuleStep = 'new rule'
-      data.step = 'board'
-      alert02.play();
-    }, 500);
-  },
+  readRuleText: '',
+  doneReading: addRuleDoneReading,
   closerStep: 'closer title',
   closerText: '',
   closerFunc() {}
 }
 
 function addRule(rule) {
+  console.log('addRule', rule)
+  data.doneReading = addRuleDoneReading;
   data.step = 'new rule'
   alert01.play();
   data.rules.push(rule)
 
   setTimeout(() => {
-    data.newRuleText = rule.text
+    data.readRuleText = rule.text
   }, 1500)
   setTimeout(() => {
-    data.newRuleStep = 'read rule'
+    data.step = 'read rule'
   }, 1400)
 }
 
 function removeRule(rule) {
-  sixBoops.play();
+  console.log('removeRule', rule)
+
+  data.doneReading = removeRuleDoneReading;
+  data.step = 'remove rule'
+  threeBeeps.play();
+
   setTimeout(() => {
-    rule.removing = true;
-  }, 0)
+    data.readRuleText = rule.removalText
+  }, 1100)
   setTimeout(() => {
-    rule.removing = false;
-  }, 420)
-  setTimeout(() => {
-    rule.removing = true;
-  }, 840)
-  setTimeout(() => {
-    rule.removing = false;
-  }, 1260)
-  setTimeout(() => {
-    rule.removing = true;
-  }, 1680)
+    data.step = 'read rule'
+  }, 1000)
+
   setTimeout(() => {
     data.rules.splice(data.rules.indexOf(rule), 1);
   }, 3100)
@@ -128,28 +144,58 @@ function selectRule(rules) {
   }
 }
 
+function generateReverseRuleText(ruleGen, ruleFills) {
+  let index = 0;
+  let improviser, uniqueImproviser, getWord, ruleFill;
+  improviser = uniqueImproviser = getWord = () => {
+    ruleFill = ruleFills[index];
+    index++;
+    return ruleFill
+  }
+  console.log('ruleGen.reverseTemplate', ruleGen.reverseTemplate)
+  if (ruleGen.reverseTemplate.length == 0) {
+    console.log('RETURNED FAST')
+    return eval(ruleGen.reverseTemplate);
+  }
+
+  let rule = eval(ruleGen.template);
+
+  let improviserName = ruleFills[0];
+  console.log('improviserName', improviserName)
+  if (rule.match(`${improviserName} is `)) {
+    return rule.replace(`${improviserName} is `, `${improviserName} is no longer `);
+  } else if (rule.match(`${improviserName} `)) {
+    return rule.replace(`${improviserName} `, `${improviserName} no longer `);
+  }
+
+  return `The following rule no longer applies: ${rule}`
+}
+
 function generateRule(args) {
-  var names = args.names;
-  var ruleData = args.ruleGens
-  console.log(ruleData)
+  console.log('args', args)
+  let names = args.names;
+  let ruleData = args.ruleGens
+  let ruleFills = []
 
-  var improviser = () => {
-    return random(names);
+  let improviser = () => {
+    let ans = random(names.concat('everyone'));
+    ruleFills.push(ans);
+    return ans;
   }
 
-  var improviserOrEveryone = () => {
-    return random(names.concat('everyone'));
+  let uniqueImproviser = () => {
+    let ans = names.splice(1, randInd(names))[0];
+    ruleFills.push(ans);
+    return ans;
   }
 
-  var uniqueImproviser = () => {
-    return names.splice(1, randInd(names))[0]
+  let getWord = category => {
+    let ans = random(ruleData.words[category]);
+    ruleFills.push(ans);
+    return ans;
   }
 
-  var getWord = category => {
-    return random(ruleData.words[category]);
-  }
-
-  var parseRuleGen = (ruleGen) => {
+  let parseRuleGen = (ruleGen) => {
     return eval(ruleGen.template);
   }
 
@@ -157,7 +203,7 @@ function generateRule(args) {
   console.log('selected rule', selectedRule);
   let rule = parseRuleGen(selectedRule);
 
-  return {text: rule, removing: false}
+  return {text: rule, removalText: generateReverseRuleText(selectedRule, ruleFills), removing: false}
 }
 
 var closers = [
@@ -219,19 +265,20 @@ export default {
   },
   methods: {
     newRule() {
-      sixBoops.play();
+      threeBeeps.play();
       removeRandomRule();
-    }
+    },
+    doAction
   },
   mounted() {
     data.ruleGens = this.ruleGens;
     data.names = this.names;
-    var strategy = new Strategies.Flip15(10 * 60 * 1000);
+    // var strategy = new Strategies.Flip15(10 * 60 * 1000);
     // var strategy = new Strategies.Every15(8 * 60 * 1000);
-    // var strategy = new Strategies.JustClose(8 * 60 * 1000);
-    setInterval(() => {
-      doAction(strategy.getAction())
-    }, 1000)
+    // // var strategy = new Strategies.JustClose(8 * 60 * 1000);
+    // setInterval(() => {
+    //   doAction(strategy.getAction())
+    // }, 1000)
   }
 }
 </script>
