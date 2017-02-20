@@ -155,10 +155,10 @@ function generateRule() {
 
   let selectedRuleIdx = selectRule(ruleData.rules);
   let selectedRule = ruleData.rules[selectedRuleIdx]
-  data.ruleGens.rules.splice(selectedRuleIdx, 1)
   console.log('selected rule', selectedRule);
   let rule = parseRuleGen(selectedRule);
 
+  data.ruleGens.rules.splice(selectedRuleIdx, 1)
   return {text: rule, removing: false}
 }
 
