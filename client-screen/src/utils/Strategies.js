@@ -35,7 +35,7 @@ module.exports = {
 
 				let r = Math.random()
 				if (r < removeBound) {
-					if (this.activeRules > 0) {
+					if (this.activeRules > 1) {
 						this.activeRules--;
 						return 'removeRule'
 					}
