@@ -1,21 +1,58 @@
 var gulp = require('gulp');
 var request = require('request');
 var exec = require('child_process').exec;
-var runSequence = require('run-sequence')
+var runSequence = require('run-sequence');
+var replace = require('gulp-replace');
+var open = require('gulp-open');
 var csv = require('csv');
+var os = require('os');
 var jsonfile = require('jsonfile');
 var _ = require('lodash');
 
 gulp.task('default', () => {
+  exec('node server.js', {'cwd': './server'});
+  gulp.src('').pipe(open({uri: 'http://localhost:8082/admin'}))
+  gulp.src('').pipe(open({uri: 'http://localhost:8082/screen'}))
+})
+
+
+gulp.task('dev', () => {
   exec('yarn run dev', {'cwd': './client-admin'});
   exec('yarn run dev', {'cwd': './client-screen'});
   exec('node server.js', {'cwd': './server'});
 })
 
-gulp.task('install', (done) => {
-
+gulp.task('build', (done) => {
   callbackCounter = 0
+  cb = () => {
+    callbackCounter++;
+    if (callbackCounter == 2) {
+      gulp.src(['./client-admin/dist/static/**', './client-screen/dist/static/**'])
+        .pipe(gulp.dest('./static'))
+      done()
+    }
+  }
 
+  exec('yarn run build', {'cwd': './client-admin'}, () => {
+    gulp.src('./client-admin/dist/index.html')
+      .pipe(replace('/static/', '/admin/static/'))
+      .pipe(gulp.dest('./client-admin/dist/', {overwrite: true}))
+    cb()
+  });
+
+  exec('yarn run build', {'cwd': './client-screen'}, () => {
+    gulp.src('./client-screen/dist/index.html')
+      .pipe(replace('/static/', '/screen/static/'))
+      .pipe(gulp.dest('./client-screen/dist/', {overwrite: true}))
+    cb()
+  });
+
+
+})
+
+
+gulp.task('install', (done) => {
+  callbackCounter = 0
   cb = () => {
     callbackCounter++;
     if (callbackCounter == 3) {
@@ -27,10 +64,6 @@ gulp.task('install', (done) => {
   exec('yarn', {'cwd': './client-screen'}, cb);
   exec('yarn', {'cwd': './server'}, cb);  
 })
-
-// gulp.task('install-admin', shell.task(['yarn'], {'cwd': './client-admin'}))
-// gulp.task('install-screen', shell.task(['yarn'], {'cwd': './client-screen'}))
-// gulp.task('install-server', shell.task(['yarn'], {'cwd': './server'}))
 
 function getDataFromCsvUrl(url, callback) {
   request(url, (error, response, body) => {

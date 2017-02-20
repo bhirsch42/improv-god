@@ -17,7 +17,7 @@ Installing Improv God requires [npm](https://www.npmjs.com/).
  4. Run yarn
 
     `yarn`
- 5. Run gulp install.
+ 5. **(To enable development. Don't worry with this if you just want to run the program.)**Run gulp install.
 
     `gulp install`
 

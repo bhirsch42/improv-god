@@ -15,6 +15,8 @@ app.use(function(req, res, next) {
 
 
 app.use('/static', express.static('../static'))
+app.use('/admin', express.static('../client-admin/dist'))
+app.use('/screen', express.static('../client-screen/dist'))
 
 app.get('/', function (req, res) {
   res.sendfile(__dirname + '/index.html');
