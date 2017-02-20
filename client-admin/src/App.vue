@@ -9,10 +9,23 @@
       <button :class="{running: showStep == 'simulate'}" v-on:click="step('simulate')">Simulate</button>
     </div>
     <div id="improviser-names">
-      Names of Improvisers
-      <div v-for="improviser, i in improvisers">
-        {{ i + 1 }}) <input type="text" v-model="improviser.name" v-on:keyup="addImproviserSlot">
-      </div >
+      <table>
+        <tr>
+          <td>#</td>
+          <td>Name</td>
+          <td>Subjective Pronoun</td>
+          <td>Objective Pronoun</td>
+          <td>Possessive Pronoun</td>
+        </tr>
+        <tr v-for="improviser, i in improvisers" :style="{backgroundColor: improviser.name.length > 0 ? 'white' : 'orange'}">
+          <td>{{ i + 1 }})</td>
+          <td><input type="text" v-model="improviser.name" v-on:keyup="addImproviserSlot"></td>
+          <td><input type="text" v-model="improviser.pronouns.subjective" v-on:keyup="addImproviserSlot"></td>
+          <td><input type="text" v-model="improviser.pronouns.objective" v-on:keyup="addImproviserSlot"></td>
+          <td><input type="text" v-model="improviser.pronouns.possessive" v-on:keyup="addImproviserSlot"></td>
+        </tr >
+        
+      </table>
     </div>
   </div>
 </template>
@@ -23,7 +36,14 @@ import io from 'socket.io-client'
 import _ from 'lodash'
 
 var data = {
-  improvisers: [{name: ''}],
+  improvisers: [{
+    name: '',
+    pronouns: {
+      subjective: 'she',
+      objective: 'her',
+      possessive: 'hers'
+    }
+  }],
   showStep: 'nothing'
 }
 
@@ -47,19 +67,20 @@ export default {
     step(message) {
       socket.emit('admin to screen', {
         step: message,
-        names: (
-          this.improvisers.map((o) => {
-            return o.name;
-          }).filter((o) => {
-            return o.length > 0;
-          })
-        )
+        improvisers: this.improvisers.filter(improviser => improviser.name.length > 0)
       })
     },
     addImproviserSlot(e) {
       console.log('addImproviserSlot')
       if (this.improvisers[this.improvisers.length - 1].name.length > 0) {
-        this.improvisers.push({name: ''});
+        this.improvisers.push({
+          name: '',
+          pronouns: {
+            subjective: 'she',
+            objective: 'her',
+            possessive: 'hers'
+          }
+        });
       }
     }
   }

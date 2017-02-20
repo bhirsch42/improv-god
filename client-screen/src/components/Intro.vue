@@ -36,17 +36,7 @@
 			})
 
 			delays = delays.concat([
-				[4000, "You have fifteen seconds to get a suggestion."],
-				[1000, "15"],
-				[1000, "14"],
-				[1000, "13"],
-				[1000, "12"],
-				[1000, "11"],
-				[1000, "10"],
-				[1000, "9"],
-				[1000, "8"],
-				[1000, "7"],
-				[1000, "6"],
+				[4000, "You have five seconds to get a suggestion."],
 				[1000, "5"],
 				[1000, "4"],
 				[1000, "3"],
