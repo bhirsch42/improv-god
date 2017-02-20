@@ -67,7 +67,6 @@ var heartOfCourage = new Howl({src: 'http://localhost:8082/static/sounds/heartOf
 
 var addRuleDoneReading = () => {
   setTimeout(() => {
-    console.log('doneSpeaking');
     data.step = 'board'
     alert02.play();
   }, 500);
@@ -75,7 +74,6 @@ var addRuleDoneReading = () => {
 
 var removeRuleDoneReading = () => {
   setTimeout(() => {
-    console.log('doneSpeaking REMOVE RULE');
     data.step = 'board'
     oneBoop.play();
   }, 500);
@@ -92,7 +90,6 @@ var data = {
 }
 
 function addRule(rule) {
-  console.log('addRule', rule)
   data.doneReading = addRuleDoneReading;
   data.step = 'new rule'
   alert01.play();
@@ -107,7 +104,6 @@ function addRule(rule) {
 }
 
 function removeRule(rule) {
-  console.log('removeRule', rule)
 
   data.doneReading = removeRuleDoneReading;
   data.step = 'remove rule'
@@ -129,8 +125,38 @@ function removeRandomRule() {
   removeRule(random(data.rules));
 }
 
+var selectionCount = {};
+
+function incrementSelectionCount(name) {
+  selectionCount[name] = selectionCount[name] ? selectionCount[name] + 1 : 1
+}
+
+function getSelectionCount(name) {
+  return typeof(selectionCount[name]) == 'undefined' ? 0 : selectionCount[name]
+}
+
+function sortBySelectionCount(people) {
+  return people.sort((person1, person2) => {return getSelectionCount(person1.name) - getSelectionCount(person2.name)});
+}
+
+function getBySelectionCount(people) {
+  shuffle(people);
+  sortBySelectionCount(people);
+  let person = people[0];
+  incrementSelectionCount(person.name);
+  return person
+}
+
+function shuffle(a) {
+  for (let i = a.length; i; i--) {
+    let j = Math.floor(Math.random() * i);
+    [a[i - 1], a[j]] = [a[j], a[i - 1]];
+  }
+}
+
 function random(arr) {
-  return arr[parseInt(Math.random() * arr.length)];
+  let person = arr[parseInt(Math.random() * arr.length)]
+  return person;
 }
 
 function randInd(arr) {
@@ -153,16 +179,13 @@ function generateReverseRuleText(ruleGen, ruleFills) {
     index++;
     return ruleFill
   }
-  console.log('ruleGen.reverseTemplate', ruleGen.reverseTemplate)
   if (ruleGen.reverseTemplate.length == 0) {
-    console.log('RETURNED FAST')
     return eval(ruleGen.reverseTemplate);
   }
 
   let rule = eval(ruleGen.template);
 
   let improviserName = ruleFills[0];
-  console.log('improviserName', improviserName)
   if (rule.match(`${improviserName} is `)) {
     return rule.replace(`${improviserName} is `, `${improviserName} is no longer `);
   } else if (rule.match(`${improviserName} `)) {
@@ -179,7 +202,6 @@ function sentenceify(s) {
 }
 
 function generateRule(args) {
-  console.log('args', args)
   let improvisers = args.improvisers;
   let ruleData = args.ruleGens
   let ruleFills = []
@@ -187,20 +209,22 @@ function generateRule(args) {
   let uniqueImprovisers = _.clone(improvisers);
 
   let improviser = () => {
-    let ans = random(improvisers.concat({
+    let choices = improvisers.concat({
       name: 'everyone',
       pronouns: {
         subjective: 'they',
         objective: 'them',
         possessive: 'their'
       }
-    })).name;
+    });
+    let ans = getBySelectionCount(choices).name;
     ruleFills.push(ans);
     return ans;
   }
 
   let uniqueImproviser = () => {
-    let ans = uniqueImprovisers.splice(1, randInd(uniqueImprovisers))[0].name;
+    let ans = getBySelectionCount(uniqueImprovisers).name;
+    uniqueImprovisers.remove(uniqueImprovisers.indexOf(ans));
     ruleFills.push(ans);
     return ans;
   }
@@ -228,7 +252,6 @@ function generateRule(args) {
   }
 
   let selectedRule = selectRule(ruleData.rules);
-  console.log('selected rule', selectedRule);
   let rule = parseRuleGen(selectedRule);
 
   rule = rule.replace('they has', 'they have');
@@ -265,7 +288,6 @@ function closeShow() {
 var closing = false;
 
 function doAction(action) {
-  console.log('doAction', action)
   if (closing) return;
   switch (action) {
     case 'default':
