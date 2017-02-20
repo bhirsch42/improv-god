@@ -133,7 +133,7 @@ function generateRule() {
   var names = data.names
   var improvisers = data.improvisers
   var ruleData = data.ruleGens
-  console.log(ruleData)
+  // console.log(ruleData)
 
   var improviser = () => {
     var choice = random(improvisers);
@@ -142,16 +142,25 @@ function generateRule() {
   }
 
   var improviserOrEveryone = () => {
-    return random(names.concat('everyone'));
+    var choice = random(improvisers.concat('everyone'));
+    if (choice === 'everyone') {
+      data.lastImproviser = {}
+      return choice
+    } else {
+      data.lastImproviser = choice
+      return choice.name
+    }
   }
 
   var uniqueImproviser = () => {
+    var avoid = data.lastImproviser ? data.lastImproviser.name : null
     var count = 0;
+    var choice = null
     do {
-      var choice = improviser()
+      choice = improviser()
       count++
-    } while (count < 20 && choice.name == data.lastImproviser.name)
-    return choice.name
+    } while (count < 20 && choice === avoid)
+    return choice
   }
 
   var getWord = category => {
@@ -162,12 +171,47 @@ function generateRule() {
     return eval(ruleGen.template);
   }
 
+  var genderedPronoun = (malePronoun, gender) => {
+    var pronouns = {
+      he: {
+        male: 'he',
+        female: 'she',
+        generic: 'they'
+      },
+      him: {
+        male: 'him',
+        female: 'her',
+        generic: 'them'
+      },
+      his: {
+        male: 'his',
+        female: 'her',
+        generic: 'their'
+      }
+    }
+    return pronouns[malePronoun][gender]
+  }
+
+  var him = () => {
+    var gender = data.lastImproviser ? data.lastImproviser.gender : 'generic'
+    return genderedPronoun('him', gender || 'generic')
+  }
+  var he = () => {
+    var gender = data.lastImproviser ? data.lastImproviser.gender : 'generic'
+    return genderedPronoun('he', gender || 'generic')
+  }
+  var his = () => {
+    var gender = data.lastImproviser ? data.lastImproviser.gender : 'generic'
+    return genderedPronoun('his', gender || 'generic')
+  }
+
   let selectedRuleIdx = selectRule(ruleData.rules);
   let selectedRule = ruleData.rules[selectedRuleIdx]
-  console.log('selected rule', selectedRule);
+  // console.log('selected rule', selectedRule);
   let rule = parseRuleGen(selectedRule);
 
   data.ruleGens.rules.splice(selectedRuleIdx, 1)
+  console.log(rule)
   return {text: rule, removing: false}
 }
 
@@ -241,6 +285,13 @@ export default {
     setInterval(() => {
       doAction(strategy.getAction())
     }, 1000)
+
+    // var i =0
+    // while (i < 100) {
+    //   generateRule()
+    //   i++
+    // }
+
   }
 }
 </script>

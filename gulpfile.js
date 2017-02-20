@@ -97,6 +97,10 @@ function addNumVariations(rules) {
     total *= names.length;
   }
 
+  var his = () => { return }
+  var him = () => { return }
+  var he = () => { return }
+
   var lastCategory = '';
 
   var getWord = category => {
@@ -127,7 +131,7 @@ function addNumVariations(rules) {
 }
 
 gulp.task('get-rules', () => {
-  var rulesUrl = 'https://docs.google.com/spreadsheets/d/1UaMHsNlbtQZrP4IbKN41OZfnOOz4Ws_djoXrCEf9i4g/pub?output=csv';
+  var rulesUrl = 'https://docs.google.com/spreadsheets/d/1KeouR8P1PS6OLFni29yUE02Ai_C0NSAPxgug2YeEXmc/pub?gid=0&single=true&output=csv';
   var gotRules = false;
   var gotWords = false;
 
