@@ -10,7 +10,7 @@
       <Rules :ruleGens="rules" :improvisers="improvisers"></Rules>
     </div>
     <div v-if="step.current == 'simulate'">
-      <Simulation :ruleGens="rules" :names="names"></Simulation>
+      <Simulation :ruleGens="rules" :names="names" :improvisers="improvisers"></Simulation>
     </div>
   </div>
 </template>

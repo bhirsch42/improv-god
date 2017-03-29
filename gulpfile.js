@@ -127,7 +127,7 @@ function addNumVariations(rules) {
 }
 
 gulp.task('get-rules', () => {
-  var rulesUrl = 'https://docs.google.com/spreadsheets/d/1UaMHsNlbtQZrP4IbKN41OZfnOOz4Ws_djoXrCEf9i4g/pub?output=csv';
+  var rulesUrl = 'https://docs.google.com/spreadsheets/d/144kU1ikxMGb8NPLHkKI97Q3YsssP_EUtVHAuTd3Y_v0/pub?gid=0&single=true&output=csv';
   var gotRules = false;
   var gotWords = false;
 
@@ -139,8 +139,9 @@ gulp.task('get-rules', () => {
       return {
         template: '`' + rule[0] + '`',
         reverseTemplate: '`' + rule[1] + '`',
-        after: rule[2],
-        until: rule[3],
+        maxDuration: rule[2],
+        lateGame: rule[3],
+        isCommand: rule[4]
       }
     })
     jsonfile.writeFileSync('static/rules.json', rules);

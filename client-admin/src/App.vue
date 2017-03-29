@@ -34,14 +34,13 @@
 import Hello from './components/Hello'
 import io from 'socket.io-client'
 import _ from 'lodash'
-
 var data = {
   improvisers: [{
     name: '',
     pronouns: {
-      subjective: 'she',
-      objective: 'her',
-      possessive: 'hers'
+      subjective: 'he',
+      objective: 'him',
+      possessive: 'his'
     }
   }],
   showStep: 'nothing'
@@ -76,9 +75,9 @@ export default {
         this.improvisers.push({
           name: '',
           pronouns: {
-            subjective: 'she',
-            objective: 'her',
-            possessive: 'hers'
+            subjective: 'he',
+            objective: 'him',
+            possessive: 'his'
           }
         });
       }

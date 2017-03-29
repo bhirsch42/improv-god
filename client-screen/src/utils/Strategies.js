@@ -1,3 +1,5 @@
+import _ from 'lodash'
+
 module.exports = {
 	Flip15: function(durationOfShow) {
 
@@ -82,5 +84,120 @@ module.exports = {
 		this.getAction = () => {
 			return 'end show'
 		}
+	},
+	HandCrafted: function(options) {
+    // let showDuration = options.showDuration
+    // let addRule      = options.addRule
+    // let generateRule = options.generateRule
+    // let removeRule   = options.removeRule
+    // let ruleGens     = options.ruleGens
+    // let improvisers  = options.improvisers
+
+    _.extend(this, options);
+
+    this.activeRules = []
+    this.ruleSelectCount = {}
+
+		this.selectRule = (rules) => {
+		  let r = Math.random()
+		  for (var i = 0; i < rules.length; i++) {
+		    if (rules[i].probCeil > r) {
+		    	while (this.ruleSelectCount[rules[i].template] >= 1) {
+		    		i = (i + 1) % rules.length
+		    	}
+  	    	this.ruleSelectCount[rules[i].template] = this.ruleSelectCount[rules[i].template] ? this.ruleSelectCount[rules[i].template] + 1 : 1
+  	    	console.log(i);
+		      return rules[i];		    	
+		    }
+		  }
+		}
+
+    // this.insertRule = (rule) => {
+	   //  return compiledRule;
+    // }
+
+    this.distribution = (x) => {
+    	return x * x
+    }
+
+    this.times = [
+
+    ]
+    for (let i = 0; i < parseInt(this.showDuration / 1000 / 60) * 2; i++) {
+    	this.times.push(this.distribution(i + 1));
+    }
+
+    let max = Math.max(...this.times);
+
+    this.times = this.times.map(t => this.showDuration - ((t / max) * (this.showDuration - 90 * 1000)))
+    this.times.reverse()
+
+
+    this.actions = []
+
+    this.times.forEach(time => {
+    	let rule = this.selectRule(this.ruleGens.rules);
+
+    	console.log('selectedRule', rule)
+    	let compiledRule = this.generateRule({
+	    	selectedRule: rule,
+	      ruleGens: this.ruleGens,
+	      improvisers: this.improvisers
+	    })
+    	this.activeRules.push(compiledRule);
+
+    	this.actions.push({
+    		func: this.addRule,
+    		rule: compiledRule,
+    		time: time
+    	})
+    	this.actions.push({
+    		func: this.removeRule,
+    		rule: compiledRule,
+    		time: time + (Math.random() * 90 + 30) * 1000
+    	})
+    })
+
+    this.actions.sort((a, b) => a.time - b.time);
+
+    console.log('actions', this.actions);
+
+    let rule = this.ruleGens.rules[23]
+  	console.log('selectedRule', rule)
+  	let compiledRule = this.generateRule({
+    	selectedRule: rule,
+      ruleGens: this.ruleGens,
+      improvisers: this.improvisers
+    })
+  	this.activeRules.push(compiledRule);
+  	this.addRule(rule)
+
+    setTimeout(() => {
+    	console.log('remove timeout strategy', rule)
+	    this.removeRule(rule);
+    }, 10000)
+
+
+    this.startTime = 0
+
+    this.start = () => {
+    	return;
+    	this.startTime = Date.now();
+    	let actionQueue = [];
+	    setInterval(() => {
+	    	let elapsedTime = Date.now() - this.startTime;
+	    	this.actions.forEach(action => {
+	    		if (action.time < elapsedTime) {
+	    			actionQueue.push(action)
+	    		}
+	    	})
+	    	this.actions = this.actions.filter(action => actionQueue.indexOf(action) == -1);
+
+	    	let action = actionQueue.shift();
+	    	action.func(action.rule);
+	    	console.log(action, actionQueue, this.actions)
+	    }, 15000)
+    }
+
 	}
 }

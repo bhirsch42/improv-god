@@ -2,16 +2,19 @@
 	<div id="simulation" v-on:click="simulateShow">
 		<h1>Click me to simulate a show</h1>
 		<div id="timeline">
-			<div v-for="(action, i) in actions" class="action" :style="{left: getActionPos(action, actions)}">
-				<div class="rules" :style="{height: action.rules * 8 + 18 + 'px', top: -action.rules * 8 - 18 + 'px'}">
-					<span class="text">
-						{{ action.rules }}
-					</span>
-				</div>
-				<div class="message" :style="{height: i % 5 * 28 + 20 + 'px'}">
-					<span class="text">
-						{{ action.message }} {{ formatTime(action.time)}}						
-					</span>
+			<div v-for="(action, i) in actions" class="action" :style="{left: (i / actions.length * 100) + '%'}">
+				<div v-if="action.action != 'doNothing'">
+					<div class="rules" :style="{height: action.rules * 8 + 18 + 'px', top: -action.rules * 8 - 18 + 'px'}">
+						{{action.rules}}
+					</div>
+					<div class="message" :style="{height: meaningfulActions.indexOf(action) % 5 * 50 + 50 + 'px'}">
+						<span class="text">
+							{{ action.action }} {{ formatTime(action.time)}}
+						</span>
+						<span class="rule-text">
+							{{ action.ruleText }}
+						</span>
+					</div>					
 				</div>
 			</div>			
 		</div>
@@ -19,30 +22,37 @@
 </template>
 
 <script>
-	import Strategies from '../utils/Strategies.js'
+	import RuleAI from './RuleAI'
 
 	var data = {
-		actions: []
+		actions: [],
+		meaningfulActions: [],
+		ai: null
 	}
 
 	function simulateShow() {
-		var strategy = new Strategies.Flip15(120 * 60 * 1000);
-		var actions = []
-		for (let i = 0; i < strategy.durationOfShow + 2; i++) {
-			let action = strategy.getAction(i);
-			if (action != 'nothing') {
-				actions.push({
-					message: action,
-					time: i,
-					rules: strategy.activeRules
-				});
-			}
+		data.actions = [];
+		for (let i = 0; i < data.ai.showDuration / 1000; i++) {
+			data.ai.step({timeElapsed: i * 1000})
 		}
-		data.actions = actions;
+		let numRules = 0
+		data.actions = data.actions.map((action, i) => {
+			if (action.action == 'addRule') {
+				numRules++
+			}
+			if (action.action == 'removeRule') {
+				numRules--
+			}
+			action.time = i * 1000
+			action.rules = numRules
+			return action
+		})
+		data.meaningfulActions = data.actions.filter(action => action.action != 'doNothing')
 	}
 
 	export default {
 		name: 'Simulation',
+		props: ['ruleGens', 'names', 'improvisers'],
 		data() {
 			return data;
 		},
@@ -63,6 +73,45 @@
 				return `${minutes}:${seconds}`;
 			},
 			simulateShow
+		},
+		mounted () {
+			data.ai = new RuleAI({
+				improvisers: this.improvisers,
+				ruleData: this.ruleGens,
+				addRule (rule, cb) {
+					data.actions.push({
+						action: "addRule",
+						ruleText: rule.text
+					})
+					cb()
+				},
+				removeRule (rule, cb) {
+					data.actions.push({
+						action: "removeRule",
+						ruleText: rule.text
+					})
+					cb()
+				},
+				displayCommand (rule) {
+					data.actions.push({
+						action: "displayCommand",
+						ruleText: rule.text
+					})
+				},
+				endShow () {
+					data.actions.push({
+						action: "endShow",
+						ruleText: ''
+					})
+				},
+				doNothing () {
+					data.actions.push({
+						action: "doNothing",
+						ruleText: ''
+					})					
+				}
+			})
+			simulateShow()
 		}
 	}
 </script>
@@ -107,6 +156,10 @@
 		.text {
 			padding-bottom: 0;
 		}
+	}
+	.rule-text {
+		font-family: 'Arial';
+		font-size: 8px;
 	}
 
 </style>
