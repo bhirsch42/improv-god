@@ -19,7 +19,7 @@
 		},
 		mounted() {
 			var delays = [
-				[6400, "Welcome to the improv show. I will be in control for the next 10 minutes."],
+				[6400, "Welcome to the improv show. I will be in control for the next 15 minutes."],
 				[5600, "I was built by your comedy scientists to create the perfect improv show."],
 				[3000, 'Your comedy scientists have been...'],
 				[2000, '...dealt with.'],

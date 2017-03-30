@@ -23,6 +23,11 @@
         NEW RULE
       </div>
     </div>
+    <div v-if="step == 'new command'" id="new-command">
+      <div class="flash-text">
+        NEW COMMAND
+      </div>
+    </div>
     <div v-if="step == 'remove rule'" id="new-rule">
       <div class="flash-text">
         REMOVING RULE
@@ -45,6 +50,15 @@
             {{ closerText }}
           </TypeAndSay>
         </div>
+        <div v-if="closerStep == 'playing out'">
+          &lt;playing you out&gt;
+        </div>
+        <div v-if="closerStep == 'lights down'">
+          Lights down
+        </div>
+        <div v-if="closerStep == 'advertise'">
+          {{ adMessage }}
+        </div>
       </div>
     </div>
   </div>
@@ -64,7 +78,8 @@ var threeBeeps = new Howl({src:'http://localhost:8082/static/sounds/threeBeeps.o
 var oneBoop = new Howl({src:'http://localhost:8082/static/sounds/oneBoop.ogg'})
 var endSong = new Howl({src: 'http://localhost:8082/static/sounds/Who Likes to Party.mp3'})
 var heartOfCourage = new Howl({src: 'http://localhost:8082/static/sounds/heartOfCourage.mp3'})
-
+var sixBoops = new Howl({src:'http://localhost:8082/static/sounds/sixBoops.ogg'})    
+var closerMusic = new Howl({src:'http://localhost:8082/static/sounds/closerMusic.ogg'})    
 
 var addRuleDoneReading = () => {
   setTimeout(() => {
@@ -87,7 +102,8 @@ var data = {
   doneReading: addRuleDoneReading,
   closerStep: 'closer title',
   closerText: '',
-  closerFunc() {}
+  closerFunc() {},
+  adMessage: 'like us on facebook.com/improvgod'
 }
 
 function addRule(rule, cb) {
@@ -121,8 +137,40 @@ function removeRule(rule, cb) {
   }, 3100)
 }
 
+function quickRemoveRule(rule, cb) {
+  sixBoops.play();
+  setTimeout(() => {
+    rule.removing = true;
+  }, 0)
+  setTimeout(() => {
+    rule.removing = false;
+  }, 420)   
+  setTimeout(() => {    
+    rule.removing = true;   
+  }, 840)   
+  setTimeout(() => {
+    rule.removing = false;
+  }, 1260)
+  setTimeout(() => {
+    rule.removing = true;
+  }, 1680)
+
+  setTimeout(() => {
+    cb()
+  }, 3100)
+}
+
 function displayCommand(rule) {
-  console.log('display command', rule)
+  data.doneReading = addRuleDoneReading;
+  data.step = 'new command'
+  alert01.play();
+
+  setTimeout(() => {
+    data.readRuleText = rule.text
+  }, 1500)
+  setTimeout(() => {
+    data.step = 'read rule'
+  }, 1400)
 }
 
 var closers = [
@@ -135,14 +183,30 @@ var closers = [
 ]
 
 function closeShow() {
-  let closer = random(closers);
-  data.closerFunc = closer.func;
+  data.closerFunc = () => {
+    setTimeout(() => {
+      data.closerStep = 'playing out'      
+    }, 1000)
+    setTimeout(() => {
+      closerMusic.play()
+    }, 1000)
+    setTimeout(() => {
+      data.closerStep = 'lights down'
+    }, 22000)
+    setTimeout(() => {
+      endSong.play()
+      data.closerStep = 'advertise'
+      setInterval(() => {
+        data.adMessage = data.adMessage + ' like us on facebook.com/improvgod'
+      }, 510)
+    }, 32000)
+  }
 
   data.step = 'closer';
   alert01.play();
 
   setTimeout(() => {
-    data.closerText = closer.message
+    data.closerText = "All rules removed. You have thirty seconds to end the show."
   }, 1500)
   setTimeout(() => {
     data.closerStep = 'read closer'
@@ -164,11 +228,12 @@ export default {
       displayCommand: displayCommand,
       endShow: closeShow,
       improvisers: this.improvisers,
-      removeRule: removeRule,
+      removeRule: quickRemoveRule,
       ruleData: this.ruleGens,
       rules: data.rules
     })
     ruleAI.start()
+    window.ruleAI = ruleAI
   }
 }
 </script>

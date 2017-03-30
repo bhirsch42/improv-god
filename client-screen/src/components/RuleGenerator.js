@@ -4,7 +4,7 @@ function RuleGenerator(args) {
 	this.selectionCount = {}
 	this.improvisers = args.improvisers
 	this.ruleData = _.clone(args.ruleData)
-	this.allowRepeats = args.allowRepeats ? args.allowRepeats : true
+	this.allowRepeats = args.allowRepeats ? args.allowRepeats : false
 }
 
 RuleGenerator.prototype.incrementSelectionCount = function (name) {
@@ -116,7 +116,14 @@ RuleGenerator.prototype.generateRule = function (ruleIndex) {
 
   let pronoun = (tense) => {
     let pronoun = null;
-    let person = this.improvisers.find(p => ruleFills.indexOf(p.name) > -1);
+    let person = this.improvisers.concat({
+      name: 'everyone',
+      pronouns: {
+        subjective: 'they',
+        objective: 'them',
+        possessive: 'their'
+      }
+    }).find(p => ruleFills.indexOf(p.name) > -1);
     if (!person) {
       person = this.improvisers[0]
       console.log('pronoun uh oh')
@@ -137,7 +144,6 @@ RuleGenerator.prototype.generateRule = function (ruleIndex) {
   let selectedRule = typeof ruleIndex == 'number' ? this.ruleData.rules[ruleIndex] : this.selectRule(this.ruleData.rules);
 
   if (!this.allowRepeats) {
-  	console.log('removing repeat')
     this.ruleData.rules.splice(this.ruleData.rules.indexOf(selectedRule), 1);
   }
 
