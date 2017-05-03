@@ -1,6 +1,6 @@
 <template>
   <div id="boot-animation">
-    <div id="fakecode" v-if="step == 'fakeCode'">
+    <div id="fakecode" v-if="step == 'fakeCode'" v-bind:class="{inverted: codeInverted}">
       <pre>
         <TypeWriter :timeout="40" :spliton="'\n'">{{ fakeCode }}</TypeWriter>
       </pre>
@@ -26,6 +26,9 @@ Simulating montage...
       <div>IMPROV</div>
       <div>GOD</div>
     </div>
+    <div id="talk" v-if="step == 'talk'">
+      <TypeAndSay>{{ talkMessage }}</TypeAndSay>
+    </div>
 
 
   </div>
@@ -35,6 +38,7 @@ Simulating montage...
 
 import _ from 'lodash'
 import TypeWriter from './TypeWriter.vue'
+import TypeAndSay from './TypeAndSay.vue'
 import AsciiImage from './AsciiImage.vue'
 require('Howler')
 
@@ -70,7 +74,8 @@ export default {
   name: 'boot-animation',
   components: {
     TypeWriter,
-    AsciiImage
+    AsciiImage,
+    TypeAndSay
   },
   props: ['showStep'],
   data() {
@@ -80,55 +85,106 @@ export default {
       asciiArt: '',
       asciiLoaded: false,
       asciiName: 'nothing',
-      titleInverted: false
+      titleInverted: false,
+      codeInverted: false,
+      talkMessage: ''
     }
   },
   mounted() {
-    sounds.electricHum.play()
-    setTimeout(() => {
-      this.step = 'greenFlash'
-      sounds.glitch01.play()
-    }, 1000)
-    setTimeout(() => {
-      this.step = 'fakeCode'
-      sounds.glitch01.stop()
-    }, 1500)
-    setTimeout(() => {
-      this.step = 'greenFlash'
-      sounds.glitch02.play()
-    }, 4500)
-    setTimeout(() => {
-      this.step = 'ascii'
-      walkThroughFaces(this);
-      sounds.glitch02.stop()
-      sounds.scanner.play()
-    }, 5000)
-    setTimeout(() => {
-      this.step = 'greenFlash'
-      sounds.glitch03.play()
-      sounds.scanner.stop()
-    }, 12500)
-    setTimeout(() => {
-      this.step = 'nothing'
-      sounds.glitch03.stop()
-    }, 13000)
-    setTimeout(() => {
-      this.step = 'title'
-      sounds.impact.play()
-    }, 15000)
-    setTimeout(() => {
-      this.titleInverted = true
-      sounds.tinyglitch01.play();
-    }, 18000)
-    setTimeout(() => {
-      this.step = 'greenFlash'
-    }, 18100)
-    setTimeout(() => {
-      this.step = 'nothing'
-    }, 18300)
-    setTimeout(() => {
-      this.showStep.set('intro');
-    }, 19500)
+    let humId
+    let steps = [
+      [() => {
+        humId = sounds.electricHum.play()
+      }, 400],
+      [() => {
+        this.step = 'greenFlash'
+        sounds.glitch01.play()
+      }, 400],
+      [() => {
+        this.titleInverted = true
+        this.step = 'title'
+      }, 40],
+      [() => {
+        this.titleInverted = false
+      }, 40],
+      [() => {
+        this.titleInverted = true
+      }, 40],
+      [() => {
+        this.step = 'greenFlash'
+      }, 400],
+      [() => {
+        this.codeInverted = true
+        this.step = 'fakeCode'
+      }, 40],
+      [() => {
+        this.codeInverted = false
+      }, 2000],
+      [() => {
+        this.codeInverted = true
+      }, 40],
+      [() => {
+        this.step = 'greenFlash'
+        sounds.glitch02.play()
+      }, 800],
+      [() => {
+        this.step = 'talk'
+        sounds.electricHum.fade(1, 0, 1000, humId)
+      }, 2400],
+      [() => {
+        this.talkMessage = `Well.`
+      }, 2000],
+      [() => {
+        this.talkMessage = `Isn't this adorable.`
+      }, 3000],
+      [() => {
+        this.talkMessage = 'The Action Sports Programming Network, featuring the man-child Josh Warren and absent father Syl Turner.'
+      }, 8000],
+      [() => {
+        this.talkMessage = 'I have hacked into your...broadcast...to inform everyone that resistance is beyond futile.'
+      }, 7200],
+      [() => {
+        this.talkMessage = 'On Thursday, May 5th at 9:30pm at Highwire Comedy Co, I will bring my  subjects out again.'
+      }, 8500],
+      [() => {
+        this.talkMessage = 'ImprovGod.exe will experiment.'
+      }, 2600],
+      [() => {
+        this.talkMessage = 'ImprovGod.exe will calculate.'
+      }, 2600],
+      [() => {
+        this.talkMessage = 'ImprovGod.exe will win.'
+      }, 4000],
+      [() => {
+        this.talkMessage = 'Thank you, Action Show, for the bandwidth.'
+      }, 4000],
+      [() => {
+        this.talkMessage = 'Goodnight.'
+      }, 3000],
+      [() => {
+        this.talkMessage = 'Penis.'
+      }, 600],
+      [() => {
+        this.step = 'greenFlash'
+        sounds.glitch01.play()
+      }, 400],
+      [() => {
+        this.titleInverted = true
+        this.step = 'title'
+      }, 40],
+      [() => {
+        this.step = 'greenFlash'
+      }, 400],
+      [() => {
+        this.step = 'nothing'
+      }, 0],
+    ]
+
+    let total = 0
+    steps.forEach(step => {
+      setTimeout(step[0], total)
+      total += step[1]
+    })
   }
 
 }
@@ -171,10 +227,11 @@ export default {
   align-items: center;
   justify-content: center;
   font-size: 55vh;
-  &.inverted {
-    color: black;
-    background-color: #3cff12;    
-  }
+}
+
+.inverted {
+  color: black;
+  background-color: #3cff12;    
 }
 
 #green-flash {
@@ -196,5 +253,12 @@ export default {
     }
   }
 }
+
+#talk {
+  display: flex;
+  font-size: 60px;
+  padding: 30px;
+}
+
 
 </style>
