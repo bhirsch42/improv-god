@@ -26,7 +26,7 @@ function RuleAI(args) {
   this.displayCommand = args.displayCommand ? args.displayCommand : (rule) => {}
   this.doNothing = args.doNothing ? args.doNothing : () => {}
   this.endShow = args.endShow ? args.endShow : () => {}
-  this.showDuration = args.showDuration ? args.showDuration : 18 * 60 * 1000 // default 15 minutes
+  this.showDuration = args.showDuration ? args.showDuration : 20 * 60 * 1000 // default 15 minutes
   console.log("Show Duration: " + this.showDuration)
   this.intervalId = null
   this.timeStarted = 0
