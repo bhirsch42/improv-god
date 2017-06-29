@@ -43,10 +43,12 @@ export default {
     oldName = this.imagename
     print(this)
   },
-  updated() {
-    if (oldName != this.imagename) {
-      print(this)
-      oldName = this.imagename
+  watch: {
+    imagename () {
+      if (oldName != this.imagename) {
+        print(this)
+        oldName = this.imagename
+      }
     }
   }
 }

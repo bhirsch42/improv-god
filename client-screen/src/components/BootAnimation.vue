@@ -37,23 +37,32 @@ import _ from 'lodash'
 import TypeWriter from './TypeWriter.vue'
 import AsciiImage from './AsciiImage.vue'
 require('Howler')
-
 var fakeCode = require('../FakeCode.js');
 
+var data = {
+  fakeCode: fakeCode,
+  step: 'greenFlash',
+  asciiArt: '',
+  asciiLoaded: false,
+  asciiName: 'nothing',
+  titleInverted: false
+}
 
-function walkThroughFaces(data) {
+
+function walkThroughFaces() {
   // Walk through ascii faces of improvisers for gag loading screen
   var nameList = ['del', 'charna', 'ian', 'tj', 'viola', 'keith', 'amy']
-  function goThroughAsciiImages(nameList, timeout, data, n) {
+  function goThroughAsciiImages(nameList, timeout, n) {
     if (n < (nameList.length)) {
       data.asciiName = nameList[n]
+      console.log('data', data.asciiName)
       n++;
       setTimeout(function() {
-        goThroughAsciiImages(nameList, timeout, data, n)
+        goThroughAsciiImages(nameList, timeout, n)
       }, timeout);
     }
   }
-  goThroughAsciiImages(nameList, 1100, data, 0)
+  goThroughAsciiImages(nameList, 1100, 0)
 }
 
 var sounds = {
@@ -74,14 +83,7 @@ export default {
   },
   props: ['showStep'],
   data() {
-    return {
-      fakeCode: fakeCode,
-      step: 'greenFlash',
-      asciiArt: '',
-      asciiLoaded: false,
-      asciiName: 'nothing',
-      titleInverted: false
-    }
+    return data
   },
   mounted() {
     sounds.electricHum.play()
@@ -99,7 +101,7 @@ export default {
     }, 4500)
     setTimeout(() => {
       this.step = 'ascii'
-      walkThroughFaces(this);
+      walkThroughFaces();
       sounds.glitch02.stop()
       sounds.scanner.play()
     }, 5000)

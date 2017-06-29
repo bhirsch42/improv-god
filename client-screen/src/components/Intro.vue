@@ -19,7 +19,7 @@
 		},
 		mounted() {
 			var delays = [
-				[9000, "Welcome to the Atlanta Improv Festival. I will be in control for the next 18 minutes. No humans will interfere."],
+				[9000, "Welcome to Megavolt. I will be in control for the next 18 minutes. No humans will interfere."],
 				[5600, "I was built by your comedy scientists to create the perfect improv show."],
 				[3000, 'Your comedy scientists have been...'],
 				[2000, '...dealt with.'],

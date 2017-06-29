@@ -249,6 +249,8 @@ export default {
   #rules {
     font-size: 60px;
     padding: 30px;
+    position: relative;
+    top: 50px;
   }
 
   #board-title {
