@@ -14,7 +14,7 @@
         <div v-for="rule in rules">
           <div class="rule" :class="{removing: rule.removing}">
             {{ rule.text }}
-          </div>      
+          </div>
         </div>
       </div>
     </div>
@@ -67,7 +67,6 @@
 <script>
 
 import TypeAndSay from './TypeAndSay.vue'
-import Strategies from '../utils/Strategies.js'
 import _ from 'lodash'
 import RuleAI from './RuleAI'
 
@@ -78,8 +77,8 @@ var threeBeeps = new Howl({src:'http://localhost:8082/static/sounds/threeBeeps.o
 var oneBoop = new Howl({src:'http://localhost:8082/static/sounds/oneBoop.ogg'})
 var endSong = new Howl({src: 'http://localhost:8082/static/sounds/Who Likes to Party.mp3'})
 var heartOfCourage = new Howl({src: 'http://localhost:8082/static/sounds/heartOfCourage.mp3'})
-var sixBoops = new Howl({src:'http://localhost:8082/static/sounds/sixBoops.ogg'})    
-var closerMusic = new Howl({src:'http://localhost:8082/static/sounds/closerMusic.ogg'})    
+var sixBoops = new Howl({src:'http://localhost:8082/static/sounds/sixBoops.ogg'})
+var closerMusic = new Howl({src:'http://localhost:8082/static/sounds/closerMusic.ogg'})
 
 var addRuleDoneReading = () => {
   setTimeout(() => {
@@ -144,10 +143,10 @@ function quickRemoveRule(rule, cb) {
   }, 0)
   setTimeout(() => {
     rule.removing = false;
-  }, 420)   
-  setTimeout(() => {    
-    rule.removing = true;   
-  }, 840)   
+  }, 420)
+  setTimeout(() => {
+    rule.removing = true;
+  }, 840)
   setTimeout(() => {
     rule.removing = false;
   }, 1260)
@@ -179,13 +178,13 @@ var closers = [
     func() {
       endSong.play();
     }
-  }  
+  }
 ]
 
 function closeShow() {
   data.closerFunc = () => {
     setTimeout(() => {
-      data.closerStep = 'playing out'      
+      data.closerStep = 'playing out'
     }, 1000)
     setTimeout(() => {
       closerMusic.play()
@@ -308,19 +307,19 @@ export default {
   }
 
   @keyframes flash-text{
-    1% {background-color: black; color: $green;} 
+    1% {background-color: black; color: $green;}
 
-    24% {background-color: black; color: $green;} 
-    25% {background-color: $green; color: black;} 
+    24% {background-color: black; color: $green;}
+    25% {background-color: $green; color: black;}
 
-    49% {background-color: $green; color: black;} 
-    50% {background-color: black; color: $green;} 
+    49% {background-color: $green; color: black;}
+    50% {background-color: black; color: $green;}
 
-    74% {background-color: black; color: $green;} 
-    75% {background-color: $green; color: black;} 
+    74% {background-color: black; color: $green;}
+    75% {background-color: $green; color: black;}
 
-    99% {background-color: $green; color: black;} 
-    100% {background-color: black; color: $green;} 
+    99% {background-color: $green; color: black;}
+    100% {background-color: black; color: $green;}
   }
 
 </style>

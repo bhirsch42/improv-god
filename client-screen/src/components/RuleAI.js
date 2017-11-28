@@ -21,11 +21,13 @@ function RuleAI(args) {
   	allowRepeats: args.allowRepeatRules ? args.allowRepeatRules : false
   })
   window.ruleGenerator = this.ruleGenerator
-  this.addRule = args.addRule ? args.addRule : (rule, cb) => {cb()}
-  this.removeRule = args.removeRule ? args.removeRule : (rule, cb) => {cb()}
+
+  this._addRule = args.addRule ? args.addRule : (rule, cb) => {cb()}
+  this._removeRule = args.removeRule ? args.removeRule : (rule, cb) => {cb()}
+  this._doNothing = args.doNothing ? args.doNothing : () => {}
+  this._endShow = args.endShow ? args.endShow : () => {}
+
   this.displayCommand = args.displayCommand ? args.displayCommand : (rule) => {}
-  this.doNothing = args.doNothing ? args.doNothing : () => {}
-  this.endShow = args.endShow ? args.endShow : () => {}
   this.showDuration = args.showDuration ? args.showDuration : 20 * 60 * 1000 // default 15 minutes
   console.log("Show Duration: " + this.showDuration)
   this.intervalId = null
@@ -63,16 +65,16 @@ RuleAI.prototype.reweightRules = function(timeElapsed) {
 	})
 }
 
-RuleAI.prototype.AIendShow = function() {
-	this.endShow()
+RuleAI.prototype.endShow = function() {
+	this._endShow()
 	this.stop()
 }
 
-RuleAI.prototype.AIdoNothing = function() {
-	this.doNothing()
+RuleAI.prototype.doNothing = function() {
+	this._doNothing()
 }
 
-RuleAI.prototype.AIaddRule = function(timeElapsed, ruleIndex) {
+RuleAI.prototype.addRule = function(timeElapsed, ruleIndex) {
 	this.reweightRules(timeElapsed)
 	let rule = ruleIndex ? ruleGenerator.generateRule(ruleIndex) : ruleGenerator.generateRule(ruleIndex)
 	rule.timeCreated = timeElapsed
@@ -85,10 +87,10 @@ RuleAI.prototype.AIaddRule = function(timeElapsed, ruleIndex) {
 	let cb = () => {
 		this.rules.push(rule)
 	}
-	this.addRule(rule, cb)
+	this._addRule(rule, cb)
 }
 
-RuleAI.prototype.AIremoveRule = function(timeElapsed) {
+RuleAI.prototype.removeRule = function(timeElapsed) {
 	let rule = null
 
 	let rulesByAge = this.rules.slice().sort((rule1, rule2) => rule1.timeCreated - rule2.timeCreated)
@@ -100,7 +102,7 @@ RuleAI.prototype.AIremoveRule = function(timeElapsed) {
 	let cb = () => {
 		this.rules.splice(this.rules.indexOf(rule), 1)
 	}
-	this.removeRule(rule, cb)
+	this._removeRule(rule, cb)
 }
 
 RuleAI.prototype.step = function(args) {
@@ -111,18 +113,18 @@ RuleAI.prototype.step = function(args) {
 	let percentComplete = timeElapsed / this.showDuration
 	let perComSq = (timeElapsed * timeElapsed) / (this.showDuration * this.showDuration)
 	if (timeSinceLastFlip < 15000) {
-		this.AIdoNothing()
+		this.doNothing()
 		return
 	}
 	this.timeOfLastFlip = timeElapsed
 
 	if (timeElapsed > this.showDuration - 30 * 1000) {
-		this.AIendShow()
+		this.endShow()
 		return
 	}
 
 	if (timeElapsed < 90 * 1000) {
-		this.AIdoNothing()
+		this.doNothing()
 		return
 	}
 
@@ -138,14 +140,14 @@ RuleAI.prototype.step = function(args) {
 	let r = Math.random()
 	if (r < removeBound) {
 		if (this.activeRules > 0) {
-			this.AIremoveRule(timeElapsed)
+			this.removeRule(timeElapsed)
 			return
 		}
 	} else if (r < addBound) {
-		this.AIaddRule(timeElapsed)
+		this.addRule(timeElapsed)
 		return
 	}
-	this.AIdoNothing()
+	this.doNothing()
 }
 
 export default RuleAI
