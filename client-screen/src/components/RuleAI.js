@@ -13,29 +13,47 @@ data.rules.splice(data.rules.indexOf(rule), 1)
 
 import RuleGenerator from './RuleGenerator'
 
-function RuleAI(args) {
-	this.rules = args.rules ? args.rules : []
+function RuleAI({
+		rules,
+		improvisers,
+		ruleData,
+		allowRepeatRules,
+		addRule,
+		removeRule,
+		doNothing,
+		endShow,
+		displayCommand,
+		showDuration,lateGameTime
+	}) {
+
+	this.rules = rules || []
+
   this.ruleGenerator = new RuleGenerator({
-  	improvisers: args.improvisers,
-  	ruleData: args.ruleData,
-  	allowRepeats: args.allowRepeatRules ? args.allowRepeatRules : false
+  	improvisers  : improvisers,
+  	ruleData     : ruleData,
+  	allowRepeats : allowRepeatRules || false
   })
+
   window.ruleGenerator = this.ruleGenerator
 
-  this._addRule = args.addRule ? args.addRule : (rule, cb) => {cb()}
-  this._removeRule = args.removeRule ? args.removeRule : (rule, cb) => {cb()}
-  this._doNothing = args.doNothing ? args.doNothing : () => {}
-  this._endShow = args.endShow ? args.endShow : () => {}
+  let resolve = () => Promise.resolve()
 
-  this.displayCommand = args.displayCommand ? args.displayCommand : (rule) => {}
-  this.showDuration = args.showDuration ? args.showDuration : 20 * 60 * 1000 // default 15 minutes
+	this.addRuleToView        = addRule        || resolve
+	this.removeRuleFromView   = removeRule     || resolve
+	this.doNothingInView      = doNothing      || resolve
+	this.endShowInView        = endShow        || resolve
+
+	this.displayCommandInView = displayCommand || resolve
+	this.showDuration         = showDuration   || 20 * 60 * 1000 // default 20 minutes
+	this.lateGameTime         = lateGameTime   || this.showDuration * .6
+
   console.log("Show Duration: " + this.showDuration)
-  this.intervalId = null
-  this.timeStarted = 0
-	this.activeRules = 0;
+
+	this.intervalId     = null
+	this.timeStarted    = 0
+	this.activeRules    = 0;
 	this.timeOfLastRule = 0;
 	this.timeOfLastFlip = 0;
-	this.lateGameTime = args.lateGameTime ? args.lateGameTime : this.showDuration * .6
 
 	this.reweightRules(0)
 }
@@ -66,28 +84,28 @@ RuleAI.prototype.reweightRules = function(timeElapsed) {
 }
 
 RuleAI.prototype.endShow = function() {
-	this._endShow()
+	this.endShowInView()
 	this.stop()
 }
 
 RuleAI.prototype.doNothing = function() {
-	this._doNothing()
+	this.doNothingInView()
 }
 
 RuleAI.prototype.addRule = function(timeElapsed, ruleIndex) {
 	this.reweightRules(timeElapsed)
-	let rule = ruleIndex ? ruleGenerator.generateRule(ruleIndex) : ruleGenerator.generateRule(ruleIndex)
+	let rule = ruleGenerator.generateRule(ruleIndex)
 	rule.timeCreated = timeElapsed
+
 	if (rule.maxDuration.length && rule.maxDuration == '0') {
-		this.displayCommand(rule)
-		return
+		this.displayCommandInView(rule)
+	} else {
+		this.timeOfLastRule = timeElapsed
+		this.activeRules++
+
+		this.addRuleToView(rule)
+			.then(() => this.rules.push(rule))
 	}
-	this.timeOfLastRule = timeElapsed
-	this.activeRules++
-	let cb = () => {
-		this.rules.push(rule)
-	}
-	this._addRule(rule, cb)
 }
 
 RuleAI.prototype.removeRule = function(timeElapsed) {
@@ -99,10 +117,9 @@ RuleAI.prototype.removeRule = function(timeElapsed) {
 	rule = rule ? rule : rulesByAge[0]
 
 	this.activeRules--
-	let cb = () => {
-		this.rules.splice(this.rules.indexOf(rule), 1)
-	}
-	this._removeRule(rule, cb)
+
+	this.removeRuleFromView(rule)
+		.then(() => this.rules.splice(this.rules.indexOf(rule), 1))
 }
 
 RuleAI.prototype.step = function(args) {

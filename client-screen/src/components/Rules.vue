@@ -33,6 +33,16 @@
         REMOVING RULE
       </div>
     </div>
+    <div v-if="step == 'add improvisers'" id="new-rule">
+      <div class="flash-text">
+        ADDING IMPROVISER
+      </div>
+    </div>
+    <div v-if="step == 'remove improvisers'" id="new-rule">
+      <div class="flash-text">
+        REMOVING IMPROVISER
+      </div>
+    </div>
     <div v-if="step == 'read rule'">
       <TypeAndSay :timeout="40" :doneReading="doneReading">
         {{ readRuleText }}
@@ -105,22 +115,31 @@ var data = {
   adMessage: 'like us on facebook.com/improvgod'
 }
 
-function addRule(rule, cb) {
+function addImprovisers(improvisers) {
+  return Promise.resolve()
+}
+
+function removeImprovisers(improvisers) {
+  return Promise.resolve()
+}
+
+function addRule(rule) {
   data.doneReading = addRuleDoneReading;
   data.step = 'new rule'
   alert01.play();
-  cb()
 
   setTimeout(() => {
     data.readRuleText = rule.text
   }, 1500)
+
   setTimeout(() => {
     data.step = 'read rule'
   }, 1400)
+
+  return Promise.resolve()
 }
 
-function removeRule(rule, cb) {
-
+function removeRule(rule) {
   data.doneReading = removeRuleDoneReading;
   data.step = 'remove rule'
   threeBeeps.play();
@@ -128,15 +147,15 @@ function removeRule(rule, cb) {
   setTimeout(() => {
     data.readRuleText = rule.removalText
   }, 1100)
+
   setTimeout(() => {
     data.step = 'read rule'
   }, 1000)
-  setTimeout(() => {
-    cb()
-  }, 3100)
+
+  return new Promise(resolve => setTimeout(resolve, 3100))
 }
 
-function quickRemoveRule(rule, cb) {
+function quickRemoveRule(rule) {
   sixBoops.play();
   setTimeout(() => {
     rule.removing = true;
@@ -154,9 +173,7 @@ function quickRemoveRule(rule, cb) {
     rule.removing = true;
   }, 1680)
 
-  setTimeout(() => {
-    cb()
-  }, 3100)
+  return new Promise(resolve => setTimeout(resolve, 3100))
 }
 
 function displayCommand(rule) {

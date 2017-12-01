@@ -1,14 +1,19 @@
 import _ from 'lodash'
 
-function RuleGenerator(args) {
-	this.selectionCount = {}
-	this.improvisers = args.improvisers
-	this.ruleData = _.clone(args.ruleData)
-	this.allowRepeats = args.allowRepeats ? args.allowRepeats : false
+function RuleGenerator({improvisers, ruleData, allowRepeats}) {
+	this.setImprovisers(improvisers || [])
+	this.ruleData = _.clone(ruleData)
+	this.allowRepeats = allowRepeats || false
+
+  this.selectionCount = {}
+}
+
+RuleGenerator.prototype.setImprovisers = function(improvisers) {
+  this.improvisers = improvisers
 }
 
 RuleGenerator.prototype.incrementSelectionCount = function (name) {
-  this.selectionCount[name] = this.selectionCount[name] ? this.selectionCount[name] + 1 : 1
+  this.selectionCount[name] = (this.selectionCount[name] || 0) + 1
 }
 
 RuleGenerator.prototype.getSelectionCount = function (name) {
@@ -131,7 +136,7 @@ RuleGenerator.prototype.generateRule = function (ruleIndex) {
     if (tense == 'objective' || tense == 'possessive') {
       pronoun = person.pronouns[tense];
     } else {
-      pronoun = person.pronouns.subjective      
+      pronoun = person.pronouns.subjective
     }
     ruleFills.push(pronoun);
     return pronoun;
