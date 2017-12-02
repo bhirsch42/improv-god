@@ -297,7 +297,7 @@ export default {
       removeImprovisers: removeImprovisers,
       entrancesAndExits: true
     })
-    // ruleAI.start()
+    ruleAI.start()
     window.ruleAI = ruleAI
   }
 }

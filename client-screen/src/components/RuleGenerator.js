@@ -9,6 +9,10 @@ function RuleGenerator({improvisers, improviserPool, ruleData, allowRepeats}) {
   this.selectionCount = {}
 }
 
+RuleGenerator.prototype.getImprovisers = function() {
+  return this.improvisers
+}
+
 RuleGenerator.prototype.addImprovisers = function(addCount) {
   return [...new Array(addCount)].map(() => this.addImproviser())
 }

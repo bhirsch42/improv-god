@@ -29,12 +29,13 @@ function RuleAI({
     removeImprovisers
   }) {
 
-  this.entrancesAndExits = entrancesAndExits
-  this.improvisers = improvisers
+  this.entrancesAndExits = entrancesAndExits;
+  this.improvisers = this.entrancesAndExits ? [] : improvisers;
+  this.improviserPool = this.entrancesAndExits ? improvisers : false;
 
   this.ruleGenerator = new RuleGenerator({
-    improvisers    : this.entrancesAndExits ? []               : this.improvisers,
-    improviserPool : this.entrancesAndExits ? this.improvisers : false,
+    improvisers    : this.improvisers,
+    improviserPool : this.improviserPool,
     ruleData       : ruleData,
     allowRepeats   : allowRepeatRules || false
   })
@@ -150,7 +151,7 @@ RuleAI.prototype.step = function(timeElapsed = Date.now() - this.timeStarted) {
   let timeSinceLastFlip = timeElapsed - this.timeOfLastFlip
   let percentComplete = timeElapsed / this.showDuration
   let percentCompleteSquared = (timeElapsed * timeElapsed) / (this.showDuration * this.showDuration)
-
+  console.log('timeElapsed', timeElapsed, this.ruleGenerator.getImprovisers().length)
   if (timeSinceLastFlip < 15000) {
     this.doNothing()
     return
@@ -163,7 +164,7 @@ RuleAI.prototype.step = function(timeElapsed = Date.now() - this.timeStarted) {
     return
   }
 
-  if (timeElapsed < 90 * 1000) {
+  if (timeElapsed < 90 * 1000 && !this.entrancesAndExits) {
     this.doNothing()
     return
   }
@@ -177,7 +178,9 @@ RuleAI.prototype.step = function(timeElapsed = Date.now() - this.timeStarted) {
   let addBound = addOdds / sum + removeBound
 
   let r = Math.random()
-  if (r < removeBound) {
+  if (this.ruleGenerator.getImprovisers().length === 0) {
+    this.addImprovisers(2)
+  } else if (r < removeBound) {
     if (this.activeRules > 0) {
       this.removeRule(timeElapsed)
     }
