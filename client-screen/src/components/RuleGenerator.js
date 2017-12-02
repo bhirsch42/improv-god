@@ -1,54 +1,77 @@
 import _ from 'lodash'
 
-function RuleGenerator({improvisers, ruleData, allowRepeats}) {
-	this.setImprovisers(improvisers || [])
+function RuleGenerator({improvisers, improviserPool, ruleData, allowRepeats}) {
+  this.improviserPool = improviserPool
+  this.improvisers = this.improviserPool ? [] : improvisers
 	this.ruleData = _.clone(ruleData)
 	this.allowRepeats = allowRepeats || false
 
   this.selectionCount = {}
 }
 
-RuleGenerator.prototype.setImprovisers = function(improvisers) {
-  this.improvisers = improvisers
+RuleGenerator.prototype.addImprovisers = function(addCount) {
+  [...new Array(addCount)].map(() => this.addImproviser())
 }
 
-RuleGenerator.prototype.incrementSelectionCount = function (name) {
+RuleGenerator.prototype.addImproviser = function() {
+  let offstageImprovisers = _.xor(this.improviserPool, this.improvisers)
+  let improviser = this.getBySelectionCount(offstageImprovisers, true)
+  this.improvisers.push(improviser)
+  return improviser
+}
+
+RuleGenerator.prototype.removeImprovisers = function(removeCount) {
+  [...new Array(removeCount)].map(() => this.removeImproviser())
+}
+
+RuleGenerator.prototype.removeImproviser = function() {
+  let improviser = this.getBySelectionCount(this.improvisers)
+  this.improvisers = _.without(this.improvisers, improviser)
+  return improviser
+}
+
+RuleGenerator.prototype.incrementSelectionCount = function(name) {
   this.selectionCount[name] = (this.selectionCount[name] || 0) + 1
 }
 
-RuleGenerator.prototype.getSelectionCount = function (name) {
+RuleGenerator.prototype.getSelectionCount = function(name) {
   return typeof(this.selectionCount[name]) == 'undefined' ? 0 : this.selectionCount[name]
 }
 
-RuleGenerator.prototype.sortBySelectionCount = function (people) {
+RuleGenerator.prototype.sortBySelectionCount = function(people) {
   return people.sort((person1, person2) => {return this.getSelectionCount(person1.name) - this.getSelectionCount(person2.name)});
 }
 
-RuleGenerator.prototype.getBySelectionCount = function (people) {
+RuleGenerator.prototype.getBySelectionCount = function(people, reverse=false) {
   this.shuffle(people);
   this.sortBySelectionCount(people);
+
+  if (reverse) {
+    people = people.reverse()
+  }
+
   let person = people[0];
   this.incrementSelectionCount(person.name);
   return person
 }
 
-RuleGenerator.prototype.shuffle = function (a) {
+RuleGenerator.prototype.shuffle = function(a) {
   for (let i = a.length; i; i--) {
     let j = Math.floor(Math.random() * i);
     [a[i - 1], a[j]] = [a[j], a[i - 1]];
   }
 }
 
-RuleGenerator.prototype.random = function (arr) {
+RuleGenerator.prototype.random = function(arr) {
   let person = arr[parseInt(Math.random() * arr.length)]
   return person;
 }
 
-RuleGenerator.prototype.randInd = function (arr) {
+RuleGenerator.prototype.randInd = function(arr) {
   return parseInt(Math.random() * arr.length);
 }
 
-RuleGenerator.prototype.selectRule = function (rules) {
+RuleGenerator.prototype.selectRule = function(rules) {
   let r = Math.random()
   for (var i = 0; i < rules.length; i++) {
     if (rules[i].probCeil > r)
@@ -56,7 +79,7 @@ RuleGenerator.prototype.selectRule = function (rules) {
   }
 }
 
-RuleGenerator.prototype.generateReverseRuleText = function (ruleGen, ruleFills) {
+RuleGenerator.prototype.generateReverseRuleText = function(ruleGen, ruleFills) {
   let index = 0;
   let improviser, uniqueImproviser, getWord, ruleFill, pronoun;
   improviser = uniqueImproviser = getWord = pronoun = () => {
@@ -80,14 +103,15 @@ RuleGenerator.prototype.generateReverseRuleText = function (ruleGen, ruleFills) 
   return `The following rule no longer applies: ${rule}`
 }
 
-RuleGenerator.prototype.sentenceify = function (s) {
+RuleGenerator.prototype.sentenceify = function(s) {
   s = s.charAt(0).toUpperCase() + s.slice(1);
   s = s.charAt(s.length - 1) == '.' ? s : s + '.'
   return s
 }
 
-RuleGenerator.prototype.generateRule = function (ruleIndex) {
+RuleGenerator.prototype.generateRule = function(ruleIndex) {
   let ruleFills = []
+  let improvisersMentioned = []
 
   let uniqueImprovisers = _.clone(this.improvisers);
 
@@ -103,6 +127,7 @@ RuleGenerator.prototype.generateRule = function (ruleIndex) {
     });
     let ans = this.getBySelectionCount(choices).name;
     ruleFills.push(ans);
+    improvisersMentioned.push(ans);
     return ans;
   }
 
@@ -110,6 +135,7 @@ RuleGenerator.prototype.generateRule = function (ruleIndex) {
     let ans = this.getBySelectionCount(uniqueImprovisers);
     uniqueImprovisers.splice(uniqueImprovisers.indexOf(ans), 1);
     ruleFills.push(ans.name);
+    improvisersMentioned.push(ans.name)
     return ans.name;
   }
 
@@ -164,7 +190,8 @@ RuleGenerator.prototype.generateRule = function (ruleIndex) {
   	lateGame: selectedRule.lateGame,
   	isCommand: selectedRule.isCommand,
   	maxDuration: selectedRule.maxDuration,
-  	timeCreated: Date.now()
+  	timeCreated: Date.now(),
+    improvisers: improvisersMentioned
   }
 }
 

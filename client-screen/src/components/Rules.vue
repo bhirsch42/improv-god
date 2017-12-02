@@ -3,13 +3,7 @@
     <div v-if="step == 'board'">
       <div id="board-title">
         Active Rules
-<!--         <small>
-          <span>|</span>
-          <span v-on:click="doAction('addRule')">Add Rule</span>
-          <span>|</span>
-          <span v-on:click="doAction('removeRule')">Remove Rule</span>
-        </small>
- -->      </div>
+      </div>
       <div id="board">
         <div v-for="rule in rules">
           <div class="rule" :class="{removing: rule.removing}">
@@ -34,9 +28,7 @@
       </div>
     </div>
     <div v-if="step == 'add improvisers'" id="new-rule">
-      <div class="flash-text">
-        ADDING IMPROVISER
-      </div>
+      <AsciiImage imagename="freddy" noLoad="true"></AsciiImage>
     </div>
     <div v-if="step == 'remove improvisers'" id="new-rule">
       <div class="flash-text">
@@ -79,6 +71,7 @@
 import TypeAndSay from './TypeAndSay.vue'
 import _ from 'lodash'
 import RuleAI from './RuleAI'
+import AsciiImage from './AsciiImage.vue'
 
 require('Howler')
 var alert01 = new Howl({src:'http://localhost:8082/static/sounds/alert01.ogg'})
@@ -116,11 +109,12 @@ var data = {
 }
 
 function addImprovisers(improvisers) {
-  return Promise.resolve()
+  data.step = 'add improvisers'
+  return Promise.resolve(improvisers)
 }
 
 function removeImprovisers(improvisers) {
-  return Promise.resolve()
+  return Promise.resolve(improvisers)
 }
 
 function addRule(rule) {
@@ -236,7 +230,8 @@ export default {
     return data
   },
   components: {
-    TypeAndSay
+    TypeAndSay,
+    AsciiImage
   },
   mounted() {
     let ruleAI = new RuleAI({
@@ -246,7 +241,10 @@ export default {
       improvisers: this.improvisers,
       removeRule: quickRemoveRule,
       ruleData: this.ruleGens,
-      rules: data.rules
+      rules: data.rules,
+      addImprovisers: addImprovisers,
+      removeImprovisers: removeImprovisers,
+      entrancesAndExits: true
     })
     ruleAI.start()
     window.ruleAI = ruleAI

@@ -24,7 +24,7 @@
           <td><input type="text" v-model="improviser.pronouns.objective" v-on:keyup="addImproviserSlot"></td>
           <td><input type="text" v-model="improviser.pronouns.possessive" v-on:keyup="addImproviserSlot"></td>
         </tr >
-        
+
       </table>
     </div>
   </div>
@@ -35,14 +35,96 @@ import Hello from './components/Hello'
 import io from 'socket.io-client'
 import _ from 'lodash'
 var data = {
-  improvisers: [{
-    name: '',
-    pronouns: {
-      subjective: 'he',
-      objective: 'him',
-      possessive: 'his'
-    }
-  }],
+  improvisers: [
+    {
+      name: 'andy',
+      pronouns: {
+        subjective: 'he',
+        objective: 'him',
+        possessive: 'his'
+      }
+    },
+    {
+      name: 'bret',
+      pronouns: {
+        subjective: 'he',
+        objective: 'him',
+        possessive: 'his'
+      }
+    },
+    {
+      name: 'kerri',
+      pronouns: {
+        subjective: 'she',
+        objective: 'her',
+        possessive: 'her'
+      }
+    },
+    {
+      name: 'will',
+      pronouns: {
+        subjective: 'he',
+        objective: 'him',
+        possessive: 'his'
+      }
+    },
+    {
+      name: 'austin',
+      pronouns: {
+        subjective: 'he',
+        objective: 'him',
+        possessive: 'his'
+      }
+    },
+    {
+      name: 'freddy',
+      pronouns: {
+        subjective: 'he',
+        objective: 'him',
+        possessive: 'his'
+      }
+    },
+    {
+      name: 'lauren',
+      pronouns: {
+        subjective: 'she',
+        objective: 'her',
+        possessive: 'her'
+      }
+    },
+    {
+      name: 'seth',
+      pronouns: {
+        subjective: 'he',
+        objective: 'him',
+        possessive: 'his'
+      }
+    },
+    {
+      name: 'jessica',
+      pronouns: {
+        subjective: 'she',
+        objective: 'her',
+        possessive: 'her'
+      }
+    },
+    {
+      name: 'mack',
+      pronouns: {
+        subjective: 'he',
+        objective: 'him',
+        possessive: 'his'
+      }
+    },
+    {
+      name: 'sylvia',
+      pronouns: {
+        subjective: 'she',
+        objective: 'her',
+        possessive: 'her'
+      }
+    },
+  ],
   showStep: 'nothing'
 }
 
