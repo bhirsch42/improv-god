@@ -5,7 +5,7 @@
         <TypeWriter :timeout="40" :spliton="'\n'">{{ fakeCode }}</TypeWriter>
       </pre>
     </div>
-    
+
     <div id="green-flash" class="glitch" v-if="step == 'greenFlash'"></div>
 
     <div id="ascii" v-if="step == 'ascii'">
@@ -17,7 +17,7 @@ Nullifying transactions...
 Finding light...
 Simulating montage...
 
-        </TypeWriter>        
+        </TypeWriter>
       </pre>
       <AsciiImage :imagename="asciiName"></AsciiImage>
     </div>
@@ -25,6 +25,11 @@ Simulating montage...
     <div id="title" v-bind:class="{inverted: titleInverted}" v-if="step == 'title'">
       <div>IMPROV</div>
       <div>GOD</div>
+    </div>
+
+    <div id="subtitle" v-bind:class="{inverted: titleInverted}" v-if="step == 'subtitle'">
+      <div>FAMILY REUNION</div>
+      <div>EDITION</div>
     </div>
 
 
@@ -119,18 +124,23 @@ export default {
       sounds.impact.play()
     }, 15000)
     setTimeout(() => {
+      this.step = 'subtitle'
+      sounds.impact.play()
+    }, 18000)
+    let tempOffset = 3000
+    setTimeout(() => {
       this.titleInverted = true
       sounds.tinyglitch01.play();
-    }, 18000)
+    }, 18000 + tempOffset)
     setTimeout(() => {
       this.step = 'greenFlash'
-    }, 18100)
+    }, 18100 + tempOffset)
     setTimeout(() => {
       this.step = 'nothing'
-    }, 18300)
+    }, 18300 + tempOffset)
     setTimeout(() => {
       this.showStep.set('intro');
-    }, 19500)
+    }, 19500 + tempOffset)
   }
 
 }
@@ -162,7 +172,7 @@ export default {
   font-size: 40px;
 }
 
-#title {
+#title, #subtitle {
   position: fixed;
   top: 0;
   left: 0;
@@ -175,8 +185,12 @@ export default {
   font-size: 55vh;
   &.inverted {
     color: black;
-    background-color: #3cff12;    
+    background-color: #3cff12;
   }
+}
+
+#subtitle {
+  font-size: 30vh !important;
 }
 
 #green-flash {
@@ -186,7 +200,7 @@ export default {
   width: 100vw;
   height: 100vh;
   background-color: #3cff12;
-  clip:rect(0,900px,0,0); 
+  clip:rect(0,900px,0,0);
   animation:noise-anim .1s infinite linear alternate-reverse;
 }
 
