@@ -51,17 +51,19 @@ function RuleAI({
   this.addImproviserstoView      = addImprovisers    || resolve
   this.removeImprovisersFromView = removeImprovisers || resolve
   this.displayCommandInView      = displayCommand    || resolve
-  this.showDuration              = showDuration      || 20 * 60 * 1000 // default 20 minutes
+  this.showDuration              = showDuration      || 9 * 60 * 1000 // default 9 minutes
   this.rules                     = rules             || []
   this.intervalId                = null
   this.timeStarted               = 0
-  this.activeRules               = 0;
   this.timeOfLastRule            = 0;
   this.timeOfLastFlip            = 0;
 
-  console.log("Show Duration: " + this.showDuration)
 
   this.reweightRules(0)
+}
+
+RuleAI.prototype.activeRuleCount = function() {
+  return this.rules.length
 }
 
 RuleAI.prototype.start = function() {
@@ -101,8 +103,8 @@ RuleAI.prototype.doNothing = function() {
 }
 
 RuleAI.prototype.addImprovisers = function(addCount) {
-  let improvisers = this.ruleGenerator.addImprovisers(addCount);
-  this.addImproviserstoView(improvisers)
+  this.ruleGenerator.addImprovisers(addCount);
+  this.addImproviserstoView(this.ruleGenerator.getImprovisers())
 }
 
 RuleAI.prototype.removeImprovisers = function(removeCount) {
@@ -113,7 +115,7 @@ RuleAI.prototype.removeImprovisers = function(removeCount) {
     this.rules.splice(this.rules.indexOf(rule), 1)
   })
 
-  this.removeImprovisersFromView(improvisers)
+  this.removeImprovisersFromView(this.ruleGenerator.getImprovisers())
 }
 
 RuleAI.prototype.addRule = function(timeElapsed, ruleIndex) {
@@ -125,10 +127,8 @@ RuleAI.prototype.addRule = function(timeElapsed, ruleIndex) {
     this.displayCommandInView(rule)
   } else {
     this.timeOfLastRule = timeElapsed
-    this.activeRules++
-
     this.addRuleToView(rule)
-      .then(() => this.rules.push(rule))
+    this.rules.push(rule)
   }
 }
 
@@ -137,21 +137,19 @@ RuleAI.prototype.removeRule = function(timeElapsed) {
 
   let rulesByAge = this.rules.slice().sort((rule1, rule2) => rule1.timeCreated - rule2.timeCreated)
   rule = rulesByAge.find(rule => rule.maxDuration.length && timeElapsed - rule.timeCreated >= parseInt(rule.maxDuration) * 1000)
-  console.log(rule)
   rule = rule ? rule : rulesByAge[0]
 
-  this.activeRules--
-
   this.removeRuleFromView(rule)
-    .then(() => this.rules.splice(this.rules.indexOf(rule), 1))
+  this.rules.splice(this.rules.indexOf(rule), 1)
 }
 
-RuleAI.prototype.step = function(timeElapsed = Date.now() - this.timeStarted) {
+RuleAI.prototype.step = function(timeElapsed) {
+  timeElapsed = typeof timeElapsed === 'number' ? timeElapsed : Date.now() - this.timeStarted
   let timeSinceLastRule = timeElapsed - this.timeOfLastRule
   let timeSinceLastFlip = timeElapsed - this.timeOfLastFlip
   let percentComplete = timeElapsed / this.showDuration
   let percentCompleteSquared = (timeElapsed * timeElapsed) / (this.showDuration * this.showDuration)
-  console.log('timeElapsed', timeElapsed, this.ruleGenerator.getImprovisers().length)
+
   if (timeSinceLastFlip < 15000) {
     this.doNothing()
     return
@@ -169,7 +167,7 @@ RuleAI.prototype.step = function(timeElapsed = Date.now() - this.timeStarted) {
     return
   }
 
-  let removeOdds = (Math.pow(this.activeRules, 3) + 4) * ((1 - percentCompleteSquared) * .8 + .2)
+  let removeOdds = (Math.pow(this.activeRuleCount(), 3) + 4) * ((1 - percentCompleteSquared) * .8 + .2)
   let addOdds = percentCompleteSquared * 30 + 4
   let nothingOdds = Math.max(1 - (timeSinceLastRule / (90 * 1000)), 0) * ((1 - percentComplete) * 100)
 
@@ -178,10 +176,11 @@ RuleAI.prototype.step = function(timeElapsed = Date.now() - this.timeStarted) {
   let addBound = addOdds / sum + removeBound
 
   let r = Math.random()
+  console.log(this.activeRuleCount(), removeBound, addBound)
   if (this.ruleGenerator.getImprovisers().length === 0) {
     this.addImprovisers(2)
   } else if (r < removeBound) {
-    if (this.activeRules > 0) {
+    if (this.activeRuleCount() > 0) {
       this.removeRule(timeElapsed)
     }
   } else if (r < addBound) {

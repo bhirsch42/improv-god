@@ -14,9 +14,9 @@
 						<span class="rule-text">
 							{{ action.ruleText }}
 						</span>
-					</div>					
+					</div>
 				</div>
-			</div>			
+			</div>
 		</div>
 	</div>
 </template>
@@ -33,7 +33,7 @@
 	function simulateShow() {
 		data.actions = [];
 		for (let i = 0; i < data.ai.showDuration / 1000; i++) {
-			data.ai.step({timeElapsed: i * 1000})
+			data.ai.step(i * 1000)
 		}
 		let numRules = 0
 		data.actions = data.actions.map((action, i) => {
@@ -78,37 +78,57 @@
 			data.ai = new RuleAI({
 				improvisers: this.improvisers,
 				ruleData: this.ruleGens,
-				addRule (rule, cb) {
+				entrancesAndExits: true,
+				addRule (rule) {
+					console.log(rule)
 					data.actions.push({
 						action: "addRule",
 						ruleText: rule.text
 					})
-					cb()
+					return Promise.resolve()
 				},
-				removeRule (rule, cb) {
+				removeRule (rule) {
 					data.actions.push({
 						action: "removeRule",
 						ruleText: rule.text
 					})
-					cb()
+					return Promise.resolve()
 				},
 				displayCommand (rule) {
 					data.actions.push({
 						action: "displayCommand",
 						ruleText: rule.text
 					})
+					return Promise.resolve()
 				},
 				endShow () {
 					data.actions.push({
 						action: "endShow",
 						ruleText: ''
 					})
+					return Promise.resolve()
 				},
 				doNothing () {
 					data.actions.push({
 						action: "doNothing",
 						ruleText: ''
-					})					
+					})
+					return Promise.resolve()
+				},
+				addImprovisers (improvisers) {
+					console.log('addImprovisers', improvisers)
+					data.actions.push({
+						action: "addImprovisers",
+						ruleText: improvisers.map(o => o.name).join(', ')
+					})
+					return Promise.resolve()
+				},
+				removeImprovisers (improvisers) {
+					data.actions.push({
+						action: "removeImprovisers",
+						ruleText: improvisers.map(o => o.name).join(', ')
+					})
+					return Promise.resolve()
 				}
 			})
 			simulateShow()
@@ -137,9 +157,9 @@
 	.message, .rules {
 		position: relative;
 		.text {
-			background-color: black;	
+			background-color: black;
 			z-index: 9999;
-			padding: 5px;	
+			padding: 5px;
 		}
 	}
 
