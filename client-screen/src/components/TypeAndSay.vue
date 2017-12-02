@@ -9,17 +9,7 @@
 <script>
 	import TypeWriter from './TypeWriter.vue';
 	import _ from 'lodash';
-
-	function speak(text, doneReading) {
-		var utterance = new SpeechSynthesisUtterance(text)
-		if (doneReading) {
-			utterance.onend = doneReading;
-		}
-		// utterance.voice = _.find(speechSynthesis.getVoices(), {name: 'Google US English'});
-		utterance.pitch = .1;
-		utterance.rate = .9;
-		speechSynthesis.speak(utterance);
-	}
+	import { speak } from '../lib/utils'
 
 	var oldText = ''
 
@@ -27,8 +17,9 @@
     let newText = data.$slots.default[0].text;
     if (oldText != newText) {
       oldText = newText;
-      speak(data.$slots.default[0].text, data.doneReading);
-    }		
+      speak(data.$slots.default[0].text)
+      	.then(data.doneReading);
+    }
 	}, 100);
 
 	export default {

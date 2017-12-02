@@ -27,12 +27,14 @@
         REMOVING RULE
       </div>
     </div>
-    <div v-if="step == 'add improvisers'" id="new-rule">
-      <AsciiImage imagename="freddy" noLoad="true"></AsciiImage>
-    </div>
-    <div v-if="step == 'remove improvisers'" id="new-rule">
-      <div class="flash-text">
-        REMOVING IMPROVISER
+    <div v-if="step == 'improvisers'" id="add-improviser">
+      <div v-for="improviser in improvisers">
+        <div class="ascii-image-wrapper" :class='{onstage: onstageImprovisers.indexOf(improviser) !== -1}'>
+          <AsciiImage :imagename='improviser.name.toLowerCase()' :noLoad='true' :width='80'></AsciiImage>
+          <div class="image-name">
+            {{ improviser.name }}
+          </div>
+        </div>
       </div>
     </div>
     <div v-if="step == 'read rule'">
@@ -72,6 +74,7 @@ import TypeAndSay from './TypeAndSay.vue'
 import _ from 'lodash'
 import RuleAI from './RuleAI'
 import AsciiImage from './AsciiImage.vue'
+import { speak } from '../lib/utils'
 
 require('Howler')
 var alert01 = new Howl({src:'http://localhost:8082/static/sounds/alert01.ogg'})
@@ -105,16 +108,64 @@ var data = {
   closerStep: 'closer title',
   closerText: '',
   closerFunc() {},
-  adMessage: 'like us on facebook.com/improvgod'
+  adMessage: 'like us on facebook.com/improvgod',
+  onstageImprovisers: []
 }
 
-function addImprovisers(improvisers) {
-  data.step = 'add improvisers'
-  return Promise.resolve(improvisers)
+function addImprovisers(enteringImprovisers) {
+  data.doneReading = addRuleDoneReading;
+  data.step = 'improvisers'
+  alert02.play();
+
+  let names = enteringImprovisers.map(improviser => improviser.name)
+  let sentence = ""
+
+  if (names.length === 1) {
+    sentence = `${names[0]} enters.`
+  } else if (names.length === 2) {
+    sentence = `${names[0]} and ${names[1]} enter.`
+  } else {
+    sentence = `${names.slice(0, names.length - 1).join(', ')} and ${names[names.length - 1]} enter.`
+  }
+
+  setTimeout(() => {
+    speak(sentence).then(() => {
+      alert02.play();
+      data.step = 'board'
+    })
+  }, 400)
+
+  data.onstageImprovisers.push(...enteringImprovisers)
+
+  return Promise.resolve(enteringImprovisers)
 }
 
-function removeImprovisers(improvisers) {
-  return Promise.resolve(improvisers)
+function removeImprovisers(exitingImprovisers) {
+  data.doneReading = addRuleDoneReading;
+  data.step = 'improvisers'
+  alert02.play();
+
+  let names = exitingImprovisers.map(improviser => improviser.name)
+  let sentence = ""
+
+  if (names.length === 1) {
+    sentence = `${names[0]} exits.`
+  } else if (names.length === 2) {
+    sentence = `${names[0]} and ${names[1]} exit.`
+  } else {
+    sentence = `${names.slice(0, names.length - 1).join(', ')} and ${names[names.length - 1]} exit.`
+  }
+
+  setTimeout(() => {
+    speak(sentence).then(() => {
+      alert02.play();
+      data.step = 'board'
+    })
+  }, 400)
+
+  data.onstageImprovisers = _.without(data.onstageImprovisers, ...exitingImprovisers)
+
+  return Promise.resolve(exitingImprovisers)
 }
 
 function addRule(rule) {
@@ -246,7 +297,7 @@ export default {
       removeImprovisers: removeImprovisers,
       entrancesAndExits: true
     })
-    ruleAI.start()
+    // ruleAI.start()
     window.ruleAI = ruleAI
   }
 }
@@ -306,6 +357,28 @@ export default {
 
   #new-rule {
     font-size: 120px;
+  }
+
+  #remove-improviser, #add-improviser {
+    position: relative;
+    top: -75px;
+    display: flex;
+    flex-wrap: wrap;
+    color: red;
+
+    .ascii-image {
+      margin-right: 15px;
+      margin-bottom: -15px;
+      margin-top: 30px;
+      border: 1px solid red;
+    }
+
+    .onstage {
+      color: #3cff12;
+      .ascii-image {
+        border: 1px solid #3cff12;
+      }
+    }
   }
 
   .flash-text {

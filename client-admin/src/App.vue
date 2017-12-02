@@ -34,10 +34,11 @@
 import Hello from './components/Hello'
 import io from 'socket.io-client'
 import _ from 'lodash'
+
 var data = {
   improvisers: [
     {
-      name: 'andy',
+      name: 'Andy',
       pronouns: {
         subjective: 'he',
         objective: 'him',
@@ -45,7 +46,7 @@ var data = {
       }
     },
     {
-      name: 'bret',
+      name: 'Bret',
       pronouns: {
         subjective: 'he',
         objective: 'him',
@@ -53,7 +54,7 @@ var data = {
       }
     },
     {
-      name: 'kerri',
+      name: 'Kerri',
       pronouns: {
         subjective: 'she',
         objective: 'her',
@@ -61,7 +62,7 @@ var data = {
       }
     },
     {
-      name: 'will',
+      name: 'Will',
       pronouns: {
         subjective: 'he',
         objective: 'him',
@@ -69,7 +70,7 @@ var data = {
       }
     },
     {
-      name: 'austin',
+      name: 'Austin',
       pronouns: {
         subjective: 'he',
         objective: 'him',
@@ -77,7 +78,7 @@ var data = {
       }
     },
     {
-      name: 'freddy',
+      name: 'Freddy',
       pronouns: {
         subjective: 'he',
         objective: 'him',
@@ -85,7 +86,7 @@ var data = {
       }
     },
     {
-      name: 'lauren',
+      name: 'Lauren',
       pronouns: {
         subjective: 'she',
         objective: 'her',
@@ -93,7 +94,7 @@ var data = {
       }
     },
     {
-      name: 'seth',
+      name: 'Seth',
       pronouns: {
         subjective: 'he',
         objective: 'him',
@@ -101,7 +102,7 @@ var data = {
       }
     },
     {
-      name: 'jessica',
+      name: 'Jessica',
       pronouns: {
         subjective: 'she',
         objective: 'her',
@@ -109,7 +110,7 @@ var data = {
       }
     },
     {
-      name: 'mack',
+      name: 'Mack',
       pronouns: {
         subjective: 'he',
         objective: 'him',
@@ -117,7 +118,7 @@ var data = {
       }
     },
     {
-      name: 'sylvia',
+      name: 'Sylvia',
       pronouns: {
         subjective: 'she',
         objective: 'her',
@@ -137,7 +138,7 @@ socket.on('screen to admin', (screenData) => {
 })
 
 export default {
-  name: 'app',
+  name: 'App',
   data() {
     return data;
   },

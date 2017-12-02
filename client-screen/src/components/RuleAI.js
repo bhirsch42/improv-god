@@ -101,10 +101,18 @@ RuleAI.prototype.doNothing = function() {
 
 RuleAI.prototype.addImprovisers = function(addCount) {
   let improvisers = this.ruleGenerator.addImprovisers(addCount);
+  this.addImproviserstoView(improvisers)
 }
 
 RuleAI.prototype.removeImprovisers = function(removeCount) {
   let improvisers = this.ruleGenerator.removeImprovisers(removeCount);
+
+  // Remove rules involving improvisers that are exiting
+  this.rules.filter(rule => _.intersection(improvisers.map(improviser => improviser.name), rule.improvisers).length > 0).forEach(rule => {
+    this.rules.splice(this.rules.indexOf(rule), 1)
+  })
+
+  this.removeImprovisersFromView(improvisers)
 }
 
 RuleAI.prototype.addRule = function(timeElapsed, ruleIndex) {

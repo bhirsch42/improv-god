@@ -10,7 +10,7 @@ function RuleGenerator({improvisers, improviserPool, ruleData, allowRepeats}) {
 }
 
 RuleGenerator.prototype.addImprovisers = function(addCount) {
-  [...new Array(addCount)].map(() => this.addImproviser())
+  return [...new Array(addCount)].map(() => this.addImproviser())
 }
 
 RuleGenerator.prototype.addImproviser = function() {
@@ -21,7 +21,7 @@ RuleGenerator.prototype.addImproviser = function() {
 }
 
 RuleGenerator.prototype.removeImprovisers = function(removeCount) {
-  [...new Array(removeCount)].map(() => this.removeImproviser())
+  return [...new Array(removeCount)].map(() => this.removeImproviser())
 }
 
 RuleGenerator.prototype.removeImproviser = function() {

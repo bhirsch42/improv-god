@@ -1,17 +1,17 @@
 <template>
   <div class="ascii-image" v-bind:class="{loaded: asciiLoaded, 'no-load': noLoad}">
-    <img width="50px" height="50px" id='image-andy' src='../assets/andy.jpg'></img>
-    <img width="50px" height="50px" id='image-bret' src='../assets/bret.jpg'></img>
-    <img width="50px" height="50px" id='image-kerri' src='../assets/kerri.jpg'></img>
-    <img width="50px" height="50px" id='image-will' src='../assets/will.jpg'></img>
-    <img width="50px" height="50px" id='image-austin' src='../assets/austin.jpg'></img>
-    <img width="50px" height="50px" id='image-freddy' src='../assets/freddy.jpg'></img>
-    <img width="50px" height="50px" id='image-lauren' src='../assets/lauren.jpg'></img>
-    <img width="50px" height="50px" id='image-seth' src='../assets/seth.jpg'></img>
-    <img width="50px" height="50px" id='image-ben' src='../assets/ben.jpg'></img>
-    <img width="50px" height="50px" id='image-jessica' src='../assets/jessica.jpg'></img>
-    <img width="50px" height="50px" id='image-mack' src='../assets/mack.jpg'></img>
-    <img width="50px" height="50px" id='image-sylvia' src='../assets/sylvia.jpg'></img>
+    <img id='image-andy' src='../assets/andy.png'></img>
+    <img id='image-bret' src='../assets/bret.png'></img>
+    <img id='image-kerri' src='../assets/kerri.png'></img>
+    <img id='image-will' src='../assets/will.png'></img>
+    <img id='image-austin' src='../assets/austin.png'></img>
+    <img id='image-freddy' src='../assets/freddy.png'></img>
+    <img id='image-lauren' src='../assets/lauren.png'></img>
+    <img id='image-seth' src='../assets/seth.png'></img>
+    <img id='image-ben' src='../assets/ben.png'></img>
+    <img id='image-jessica' src='../assets/jessica.png'></img>
+    <img id='image-mack' src='../assets/mack.png'></img>
+    <img id='image-sylvia' src='../assets/sylvia.png'></img>
 
     <img id='image-del' src='../assets/del.png'></img>
     <img id='image-amy' src='../assets/amy.png'></img>
@@ -33,6 +33,7 @@ function print(data) {
   data.asciiLoaded = false;
   let jscii = new Jscii({
     el: document.getElementById(`image-${data.imagename}`),
+    width: data.width,
     fn: function(art) {
       setTimeout(() => {
         data.text = _.replace(art, /&nbsp;/g, ' ');
@@ -46,7 +47,7 @@ var oldName = ''
 
 export default {
   name: 'ascii-image',
-  props: ['imagename', 'noLoad'],
+  props: ['imagename', 'noLoad', 'width'],
   data() {
     return {
       text: '',
