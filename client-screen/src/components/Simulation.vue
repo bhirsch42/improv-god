@@ -80,7 +80,6 @@
 				ruleData: this.ruleGens,
 				entrancesAndExits: true,
 				addRule (rule) {
-					console.log(rule)
 					data.actions.push({
 						action: "addRule",
 						ruleText: rule.text
@@ -116,7 +115,6 @@
 					return Promise.resolve()
 				},
 				addImprovisers (improvisers) {
-					console.log('addImprovisers', improvisers)
 					data.actions.push({
 						action: "addImprovisers",
 						ruleText: improvisers.map(o => o.name).join(', ')

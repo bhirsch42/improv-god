@@ -12,6 +12,8 @@
     <img id='image-jessica' src='../assets/jessica.png'></img>
     <img id='image-mack' src='../assets/mack.png'></img>
     <img id='image-sylvia' src='../assets/sylvia.png'></img>
+    <img id='image-mark' src='../assets/mark.jpg'></img>
+    <img id='image-sara' src='../assets/sara.jpg'></img>
 
     <img id='image-del' src='../assets/del.png'></img>
     <img id='image-amy' src='../assets/amy.png'></img>

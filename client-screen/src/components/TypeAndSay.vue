@@ -43,3 +43,9 @@
 	  },
 	}
 </script>
+
+<style>
+	#type-and-say {
+		font-size: 200px;
+	}
+</style>

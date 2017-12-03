@@ -36,6 +36,9 @@
           </div>
         </div>
       </div>
+      <div class="improviser-sentence">
+        {{ improviserSentence }}
+      </div>
     </div>
     <div v-if="step == 'read rule'">
       <TypeAndSay :timeout="40" :doneReading="doneReading">
@@ -109,10 +112,15 @@ var data = {
   closerText: '',
   closerFunc() {},
   adMessage: 'like us on facebook.com/improvgod',
-  onstageImprovisers: []
+  onstageImprovisers: [],
+  improviserSentence: ''
 }
 
 function addImprovisers(enteringImprovisers) {
+  if (enteringImprovisers.length === 0) {
+    return
+  }
+
   data.doneReading = addRuleDoneReading;
   data.step = 'improvisers'
   alert02.play();
@@ -128,12 +136,16 @@ function addImprovisers(enteringImprovisers) {
     sentence = `${names.slice(0, names.length - 1).join(', ')} and ${names[names.length - 1]} enter.`
   }
 
+  data.improviserSentence = sentence;
+
   setTimeout(() => {
     speak(sentence).then(() => {
-      alert02.play();
-      data.step = 'board'
+      setTimeout(() => {
+        alert02.play();
+        data.step = 'board'
+      }, 400)
     })
-  }, 400)
+  }, 700)
 
   data.onstageImprovisers.push(...enteringImprovisers)
 
@@ -141,6 +153,10 @@ function addImprovisers(enteringImprovisers) {
 }
 
 function removeImprovisers(exitingImprovisers) {
+  if (exitingImprovisers.length === 0) {
+    return
+  }
+
   data.doneReading = addRuleDoneReading;
   data.step = 'improvisers'
   alert02.play();
@@ -156,12 +172,16 @@ function removeImprovisers(exitingImprovisers) {
     sentence = `${names.slice(0, names.length - 1).join(', ')} and ${names[names.length - 1]} exit.`
   }
 
+  data.improviserSentence = sentence;
+
   setTimeout(() => {
     speak(sentence).then(() => {
-      alert02.play();
-      data.step = 'board'
+      setTimeout(() => {
+        alert02.play();
+        data.step = 'board'
+      }, 400)
     })
-  }, 400)
+  }, 700)
 
   data.onstageImprovisers = _.without(data.onstageImprovisers, ...exitingImprovisers)
 
@@ -267,7 +287,7 @@ function closeShow() {
   alert01.play();
 
   setTimeout(() => {
-    data.closerText = "All rules removed. You have thirty seconds to end the show."
+    data.closerText = "All rules removed. Everybody is onstage. You have thirty seconds to end the show."
   }, 1500)
   setTimeout(() => {
     data.closerStep = 'read closer'
@@ -347,7 +367,7 @@ export default {
     padding: 15px;
     margin-top: 30px;
     margin-left: 30px;
-    font-size: 50px;
+    font-size: 80px;
   }
 
   .removing {
@@ -408,6 +428,14 @@ export default {
 
     99% {background-color: $green; color: black;}
     100% {background-color: black; color: $green;}
+  }
+
+  .improviser-sentence {
+    margin-top: 50px;
+    font-size: 100px;
+    color: $green;
+    position: absolute;
+    bottom: -200px;
   }
 
 </style>

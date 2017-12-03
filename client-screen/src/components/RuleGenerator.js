@@ -19,7 +19,9 @@ RuleGenerator.prototype.addImprovisers = function(addCount) {
 
 RuleGenerator.prototype.addImproviser = function() {
   let offstageImprovisers = _.xor(this.improviserPool, this.improvisers)
-  let improviser = this.getBySelectionCount(offstageImprovisers, true)
+  console.log("SORTED", this.sortBySelectionCount(offstageImprovisers, false).map(o => o.name))
+  let improviser = this.getBySelectionCount(offstageImprovisers, false)
+  console.log(this.selectionCount)
   this.improvisers.push(improviser)
   return improviser
 }
@@ -42,17 +44,19 @@ RuleGenerator.prototype.getSelectionCount = function(name) {
   return typeof(this.selectionCount[name]) == 'undefined' ? 0 : this.selectionCount[name]
 }
 
-RuleGenerator.prototype.sortBySelectionCount = function(people) {
-  return people.sort((person1, person2) => {return this.getSelectionCount(person1.name) - this.getSelectionCount(person2.name)});
+RuleGenerator.prototype.sortBySelectionCount = function(people, reverse=false) {
+  let result = people.sort((person1, person2) => {return this.getSelectionCount(person1.name) - this.getSelectionCount(person2.name)});
+
+  if (reverse) {
+    result = result.reverse()
+  }
+
+  return result
 }
 
 RuleGenerator.prototype.getBySelectionCount = function(people, reverse=false) {
   this.shuffle(people);
-  this.sortBySelectionCount(people);
-
-  if (reverse) {
-    people = people.reverse()
-  }
+  this.sortBySelectionCount(people, reverse);
 
   let person = people[0];
   this.incrementSelectionCount(person.name);

@@ -57,6 +57,8 @@ function RuleAI({
   this.timeStarted               = 0
   this.timeOfLastRule            = 0;
   this.timeOfLastFlip            = 0;
+  this.lastAddedImprovisers = 0;
+  this.showEnded = false;
 
 
   this.reweightRules(0)
@@ -102,20 +104,22 @@ RuleAI.prototype.doNothing = function() {
   this.doNothingInView()
 }
 
-RuleAI.prototype.addImprovisers = function(addCount) {
-  this.ruleGenerator.addImprovisers(addCount);
-  this.addImproviserstoView(this.ruleGenerator.getImprovisers())
+RuleAI.prototype.addImprovisers = function(addCount, elapsedTime) {
+  this.lastAddedImprovisers = elapsedTime
+  let improvisers = this.ruleGenerator.addImprovisers(addCount);
+  this.addImproviserstoView(improvisers)
 }
 
 RuleAI.prototype.removeImprovisers = function(removeCount) {
   let improvisers = this.ruleGenerator.removeImprovisers(removeCount);
 
   // Remove rules involving improvisers that are exiting
-  this.rules.filter(rule => _.intersection(improvisers.map(improviser => improviser.name), rule.improvisers).length > 0).forEach(rule => {
-    this.rules.splice(this.rules.indexOf(rule), 1)
-  })
 
-  this.removeImprovisersFromView(this.ruleGenerator.getImprovisers())
+  this.removeImprovisersFromView(improvisers).then(() => {
+    this.rules.filter(rule => _.intersection(improvisers.map(improviser => improviser.name), rule.improvisers).length > 0).forEach(rule => {
+      this.rules.splice(this.rules.indexOf(rule), 1)
+    })
+  })
 }
 
 RuleAI.prototype.addRule = function(timeElapsed, ruleIndex) {
@@ -139,8 +143,9 @@ RuleAI.prototype.removeRule = function(timeElapsed) {
   rule = rulesByAge.find(rule => rule.maxDuration.length && timeElapsed - rule.timeCreated >= parseInt(rule.maxDuration) * 1000)
   rule = rule ? rule : rulesByAge[0]
 
-  this.removeRuleFromView(rule)
-  this.rules.splice(this.rules.indexOf(rule), 1)
+  this.removeRuleFromView(rule).then(() => {
+    this.rules.splice(this.rules.indexOf(rule), 1)
+  })
 }
 
 RuleAI.prototype.step = function(timeElapsed) {
@@ -150,7 +155,7 @@ RuleAI.prototype.step = function(timeElapsed) {
   let percentComplete = timeElapsed / this.showDuration
   let percentCompleteSquared = (timeElapsed * timeElapsed) / (this.showDuration * this.showDuration)
 
-  if (timeSinceLastFlip < 15000) {
+  if (timeSinceLastFlip < 10000) {
     this.doNothing()
     return
   }
@@ -158,33 +163,47 @@ RuleAI.prototype.step = function(timeElapsed) {
   this.timeOfLastFlip = timeElapsed
 
   if (timeElapsed > this.showDuration - 30 * 1000) {
-    this.endShow()
-    return
-  }
+    if (!this.showEnded) {
+      this.endShow()
+      this.showEnded = true
+    }
 
-  if (timeElapsed < 90 * 1000 && !this.entrancesAndExits) {
-    this.doNothing()
     return
   }
 
   let removeOdds = (Math.pow(this.activeRuleCount(), 3) + 4) * ((1 - percentCompleteSquared) * .8 + .2)
-  let addOdds = percentCompleteSquared * 30 + 4
-  let nothingOdds = Math.max(1 - (timeSinceLastRule / (90 * 1000)), 0) * ((1 - percentComplete) * 100)
+  let addOdds = percentComplete * 30 + 4
+  let nothingOdds = Math.max(1 - (timeSinceLastRule / (90 * 1000)), 0) * ((1 - percentComplete) * 400)
+  let addImproviserOdds = percentCompleteSquared * 20 + 4
+  let percentOnstage = this.ruleGenerator.getImprovisers().length / this.improviserPool.length
+  let removeImproviserOdds = (percentOnstage * .5) * 50
+  let offstageImproviserCount = this.improviserPool.length - this.ruleGenerator.getImprovisers().length
 
-  let sum = removeOdds + addOdds + nothingOdds
+  let sum = removeOdds + addOdds + nothingOdds + addImproviserOdds + removeImproviserOdds
   let removeBound = removeOdds / sum
   let addBound = addOdds / sum + removeBound
+  let addImproviserBound = addImproviserOdds / sum + addBound
+  let removeImproviserBound = removeImproviserOdds / sum + addImproviserBound
+
 
   let r = Math.random()
-  console.log(this.activeRuleCount(), removeBound, addBound)
-  if (this.ruleGenerator.getImprovisers().length === 0) {
+  if (this.ruleGenerator.getImprovisers().length < 2) {
     this.addImprovisers(2)
+  } else if (timeElapsed - this.lastAddedImprovisers > 40000 && offstageImproviserCount > 0) {
+    let count = Math.min(1 + parseInt(Math.random() * (.8 * percentComplete + .2) * (this.improviserPool.length - this.ruleGenerator.getImprovisers().length)), offstageImproviserCount)
+    this.addImprovisers(count, timeElapsed)
   } else if (r < removeBound) {
     if (this.activeRuleCount() > 0) {
       this.removeRule(timeElapsed)
     }
   } else if (r < addBound) {
     this.addRule(timeElapsed)
+  } else if (r < addImproviserBound) {
+    let count = Math.min(1 + parseInt(Math.random() * (.8 * percentComplete + .2) * (this.improviserPool.length - this.ruleGenerator.getImprovisers().length)), offstageImproviserCount)
+    this.addImprovisers(count, timeElapsed)
+  } else if (r < removeImproviserBound) {
+    let count = 1 + parseInt(Math.random() * this.ruleGenerator.getImprovisers().length)
+    this.removeImprovisers(count, timeElapsed)
   } else {
     this.doNothing()
   }

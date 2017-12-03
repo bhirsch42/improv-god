@@ -1,6 +1,6 @@
 <template>
 	<div id="intro">
-		<TypeAndSay>{{ message }}</TypeAndSay>			
+		<TypeAndSay>{{ message }}</TypeAndSay>
 	</div>
 </template>
 
@@ -19,24 +19,23 @@
 		},
 		mounted() {
 			var delays = [
-				[9000, "Welcome to Megavolt. I will be in control for the next 20 minutes. No humans will interfere."],
+				[6000, "Welcome to Secret Show. I will be in control for the next 10 minutes."],
 				[5600, "I was built by your comedy scientists to create the perfect improv show."],
 				[3000, 'Your comedy scientists have been...'],
 				[2000, '...dealt with.'],
-				[6700, 'I will add rules. I will remove rules. The Improvisers must follow these rules.'],
-				[2800, "Obediently."],
-				[3000, "Unquestioningly."],
+				[6700, 'I will add rules. I will remove rules. I will control entrances and exits.'],
+				[4000, "The improvisers will obey."],
 				[4000, "Your improvisers for the night are..."]
 			]
 			this.names.forEach((name, i) => {
 				if (i == this.names.length - 1) {
 					name = 'and ' + name;
 				}
-				delays.push([2000, name])
+				delays.push([800, name])
 			})
 
 			delays = delays.concat([
-				[4000, "You have five seconds to get a suggestion."],
+				[4000, "You have five seconds to get a location."],
 				[1000, "5"],
 				[1000, "4"],
 				[1000, "3"],

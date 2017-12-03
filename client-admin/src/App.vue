@@ -125,6 +125,14 @@ var data = {
         possessive: 'her'
       }
     },
+    {
+      name: 'Sara',
+      pronouns: {
+        subjective: 'she',
+        objective: 'her',
+        possessive: 'her'
+      }
+    },
   ],
   showStep: 'nothing'
 }
