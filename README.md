@@ -1,27 +1,29 @@
-#Improv God
-An AI host for your improv show.
+# improv-god
 
----
+## Project setup
+```
+yarn install
+```
 
-##Installation
-Installing Improv God requires [npm](https://www.npmjs.com/).
- 1. If you haven't already, install [yarn](https://code.facebook.com/posts/1840075619545360) globally.
+### Compiles and hot-reloads for development
+```
+yarn run serve
+```
 
-    `npm install -g yarn`
- 2. Clone the repository
+### Compiles and minifies for production
+```
+yarn run build
+```
 
-    `git clone https://github.com/bhirsch42/improv-god.git`
- 3. Navigate into the project
-    
-    `cd improv-god/`
- 4. Run yarn
+### Run your tests
+```
+yarn run test
+```
 
-    `yarn`
- 5. Run gulp install.
+### Lints and fixes files
+```
+yarn run lint
+```
 
-    `gulp install`
-
-##Running Improv God
-To start up the program on your machine, run `gulp` in the project directory.
-
-This will automatically open two windows or tabs in your default browser. One window will be the admin panel to control the show. The other is a display that should be visible to the improvisers and the audience.
+### Customize configuration
+See [Configuration Reference](https://cli.vuejs.org/config/).
