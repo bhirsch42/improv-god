@@ -5,8 +5,8 @@
 </template>
 
 <script>
+import { Howler } from 'howler'
 
-require('Howler')
 var sounds = [
   new Howl({src:'http://localhost:8082/static/sounds/type01.ogg'}),
   new Howl({src:'http://localhost:8082/static/sounds/type02.ogg'}),
@@ -20,8 +20,8 @@ var timeoutIDs = []
 function playSound(volume) {
   if (volume) {
     let i = parseInt(Math.random() * sounds.length)
-    sounds[i].volume(volume);    
-    sounds[i].play();    
+    sounds[i].volume(volume);
+    sounds[i].play();
   }
 }
 
@@ -54,7 +54,7 @@ function print(text, spliton, volume, timeout) {
   if (spliton) {
     lineWriter(text.split(spliton), timeout, volume, 0)
   } else {
-    typeWriter(text, timeout, volume, 0)      
+    typeWriter(text, timeout, volume, 0)
   }
 }
 

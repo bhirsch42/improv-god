@@ -42,7 +42,7 @@ import _ from 'lodash'
 import TypeWriter from './TypeWriter.vue'
 import AsciiImage from './AsciiImage.vue'
 require('Howler')
-var fakeCode = require('../FakeCode.js');
+var fakeCode = require('../lib/FakeCode.js');
 
 var data = {
   fakeCode: fakeCode,

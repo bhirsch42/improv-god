@@ -1,27 +1,12 @@
 <template>
   <div class="ascii-image" v-bind:class="{loaded: asciiLoaded, 'no-load': noLoad}">
-    <img id='image-andy' src='../assets/andy.png'></img>
-    <img id='image-bret' src='../assets/bret.png'></img>
-    <img id='image-kerri' src='../assets/kerri.png'></img>
-    <img id='image-will' src='../assets/will.png'></img>
-    <img id='image-austin' src='../assets/austin.png'></img>
-    <img id='image-freddy' src='../assets/freddy.png'></img>
-    <img id='image-lauren' src='../assets/lauren.png'></img>
-    <img id='image-seth' src='../assets/seth.png'></img>
-    <img id='image-ben' src='../assets/ben.png'></img>
-    <img id='image-jessica' src='../assets/jessica.png'></img>
-    <img id='image-mack' src='../assets/mack.png'></img>
-    <img id='image-sylvia' src='../assets/sylvia.png'></img>
-    <img id='image-mark' src='../assets/mark.jpg'></img>
-    <img id='image-sara' src='../assets/sara.jpg'></img>
-
-    <img id='image-del' src='../assets/del.png'></img>
-    <img id='image-amy' src='../assets/amy.png'></img>
-    <img id='image-charna' src='../assets/charna.png'></img>
-    <img id='image-keith' src='../assets/keith.png'></img>
-    <img id='image-tj' src='../assets/tj.png'></img>
-    <img id='image-ian' src='../assets/ian.png'></img>
-    <img id='image-viola' src='../assets/viola.png'></img>
+    <img id='image-del' src='../assets/img/del.png'></img>
+    <img id='image-amy' src='../assets/img/amy.png'></img>
+    <img id='image-charna' src='../assets/img/charna.png'></img>
+    <img id='image-keith' src='../assets/img/keith.png'></img>
+    <img id='image-tj' src='../assets/img/tj.png'></img>
+    <img id='image-ian' src='../assets/img/ian.png'></img>
+    <img id='image-viola' src='../assets/img/viola.png'></img>
 
     <pre class="ascii-text">
       {{ text }}
