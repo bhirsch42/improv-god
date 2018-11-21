@@ -28,11 +28,9 @@ Simulating montage...
     </div>
 
     <div id="subtitle" v-bind:class="{inverted: titleInverted}" v-if="step == 'subtitle'">
-      <div>FAMILY REUNION</div>
-      <div>EDITION</div>
+      <div>PRESENTED BY</div>
+      <div>ACTION SHOW</div>
     </div>
-
-
   </div>
 </template>
 

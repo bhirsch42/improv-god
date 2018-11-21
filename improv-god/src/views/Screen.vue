@@ -41,7 +41,7 @@ export default {
       },
       improvisers: [],
       names: [],
-      rules: {}
+      rules: require('../assets/rules.json'),
     }
   },
   mounted() {
@@ -54,7 +54,6 @@ export default {
       this.step.set(data.step);
       this.improvisers = data.improvisers;
       this.names = data.improvisers.map(improviser => improviser.name);
-      this.rules = data.rules;
 
       if (s != 'nothing' && this.step.current == 'nothing') {
         location.reload()
@@ -67,16 +66,20 @@ export default {
 <style>
 @font-face {
   font-family: 'VT323';
-  src:  url('../assets/fonts/VT323-Regular.ttf') format('ttf');
+  src: url('../assets/fonts/VT323-Regular.ttf');
 }
 
-body, html {
+#screen {
+  position: fixed;
+  top: 0;
+  left: 0;
   font-family: 'VT323';
   background-color: black;
   color: #3cff12;
   margin: 0;
   padding: 0;
   height: 100vh;
+  width: 100vw;
   overflow: hidden;
 }
 </style>

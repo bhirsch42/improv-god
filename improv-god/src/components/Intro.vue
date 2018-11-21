@@ -19,12 +19,11 @@
 		},
 		mounted() {
 			var delays = [
-				[6000, "Welcome to Secret Show. I will be in control for the next 10 minutes."],
+				[6000, "Welcome to Action Show. I will be in control for the next 10 minutes."],
 				[5600, "I was built by your comedy scientists to create the perfect improv show."],
 				[3000, 'Your comedy scientists have been...'],
 				[2000, '...dealt with.'],
-				[6700, 'I will add rules. I will remove rules. I will control entrances and exits.'],
-				[4000, "The improvisers will obey."],
+				[6700, 'I will add rules. I will remove rules. The improvisers will obey.'],
 				[4000, "Your improvisers for the night are..."]
 			]
 			this.names.forEach((name, i) => {
