@@ -23,7 +23,8 @@ function RuleAI({
     doNothing,
     endShow,
     displayCommand,
-    showDuration,lateGameTime
+    showDuration,
+    lateGameTime
   }) {
 
   this.rules = rules || []

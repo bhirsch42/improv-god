@@ -11,7 +11,7 @@
 		components: {
 			TypeAndSay
 		},
-		props: ['names', 'step'],
+		props: ['names', 'step', 'performanceDuration'],
 		data() {
 			return {
 				message: ''
@@ -19,18 +19,20 @@
 		},
 		mounted() {
 			var delays = [
-				[6000, "Welcome to Action Show. I will be in control for the next 10 minutes."],
+				[6000, `Welcome to Action Show. I will be in control for the next ${this.performanceDuration} minutes.`],
 				[5600, "I was built by your comedy scientists to create the perfect improv show."],
 				[3000, 'Your comedy scientists have been...'],
 				[2000, '...dealt with.'],
-				[6700, 'I will add rules. I will remove rules. The improvisers will obey.'],
+				[6700, 'I will add rules. I will remove rules. The improvisers must follow these rules.'],
+				[2000, 'Obediently.'],
+				[2000, 'Unquestioningly.'],
 				[4000, "Your improvisers for the night are..."]
 			]
 			this.names.forEach((name, i) => {
 				if (i == this.names.length - 1) {
 					name = 'and ' + name;
 				}
-				delays.push([800, name])
+				delays.push([1000, name])
 			})
 
 			delays = delays.concat([
@@ -42,7 +44,7 @@
 				[2000, "1"],
 				[2000, "Good."],
 				[4000, "The show will now begin."],
-				[4000, "Lights down."],
+				[3000, "Lights down."],
 				[2000, "Lights up."],
 			]);
 

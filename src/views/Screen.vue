@@ -4,10 +4,10 @@
       <BootAnimation :showStep="step"></BootAnimation>
     </div>
     <div v-if="step.current == 'intro'">
-      <Intro :names="names" :step="step"></Intro>
+      <Intro :names="names" :performanceDuration="performanceDuration" :step="step"></Intro>
     </div>
     <div v-if="step.current == 'rules'">
-      <Rules :ruleGens="rules" :improvisers="improvisers"></Rules>
+      <Rules :ruleGens="rules" :improvisers="improvisers" :performanceDuration="performanceDuration"></Rules>
     </div>
     <div v-if="step.current == 'simulate'">
       <Simulation :ruleGens="rules" :names="names" :improvisers="improvisers"></Simulation>
@@ -53,6 +53,8 @@ export default {
 
       this.step.set(data.step);
       this.improvisers = data.improvisers;
+      this.performanceDuration = data.performanceDuration;
+      console.log(this.performanceDuration)
       this.names = data.improvisers.map(improviser => improviser.name);
 
       if (s != 'nothing' && this.step.current == 'nothing') {
@@ -81,5 +83,6 @@ export default {
   height: 100vh;
   width: 100vw;
   overflow: hidden;
+  line-height: normal;
 }
 </style>

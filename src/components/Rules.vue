@@ -78,7 +78,7 @@ import _ from 'lodash'
 import RuleAI from '../lib/RuleAI'
 import AsciiImage from './AsciiImage.vue'
 import { speak } from '../lib/utils'
-import { Howler } from 'howler'
+import { Howl } from 'howler'
 
 var alert01 = new Howl({ src: require('../assets/sounds/alert01.ogg') })
 var alert02 = new Howl({ src: require('../assets/sounds/alert02.ogg') })
@@ -287,7 +287,7 @@ function closeShow() {
   alert01.play();
 
   setTimeout(() => {
-    data.closerText = "All rules removed. Everybody is onstage. You have thirty seconds to end the show."
+    data.closerText = "All rules removed. You have thirty seconds to end the show."
   }, 1500)
   setTimeout(() => {
     data.closerStep = 'read closer'
@@ -296,7 +296,7 @@ function closeShow() {
 
 export default {
   name: 'rules',
-  props: ['ruleGens', 'improvisers'],
+  props: ['ruleGens', 'improvisers', 'performanceDuration'],
   data() {
     return data
   },
@@ -315,7 +315,7 @@ export default {
       rules: data.rules,
       addImprovisers: addImprovisers,
       removeImprovisers: removeImprovisers,
-      entrancesAndExits: true
+      showDuration: this.performanceDuration * 60 * 1000,
     })
     ruleAI.start()
     window.ruleAI = ruleAI

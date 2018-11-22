@@ -1,31 +1,39 @@
 <template>
-  <div class="home">
-    <div id="controls">
-      <button :class="{running: showStep == 'boot'}" v-on:click="step('boot')">Boot</button>
-      <button :class="{running: showStep == 'intro'}" v-on:click="step('intro')">Intro</button>
-      <button :class="{running: showStep == 'rules'}" v-on:click="step('rules')">Rules</button>
-      <button :class="{running: showStep == 'nothing'}" v-on:click="step('nothing')">Stop Show</button>
-      <hr style="width: 100%">
-      <button :class="{running: showStep == 'simulate'}" v-on:click="step('simulate')">Simulate</button>
-    </div>
-    <div id="improviser-names">
-      <table>
-        <tr>
-          <td>#</td>
-          <td>Name</td>
-          <td>Subjective Pronoun</td>
-          <td>Objective Pronoun</td>
-          <td>Possessive Pronoun</td>
-        </tr>
-        <tr v-for="improviser, i in improvisers" :style="{backgroundColor: improviser.name.length > 0 ? 'white' : 'orange'}">
-          <td>{{ i + 1 }})</td>
-          <td><input type="text" v-model="improviser.name" v-on:keyup="addImproviserSlot"></td>
-          <td><input type="text" v-model="improviser.pronouns.subjective" v-on:keyup="addImproviserSlot"></td>
-          <td><input type="text" v-model="improviser.pronouns.objective" v-on:keyup="addImproviserSlot"></td>
-          <td><input type="text" v-model="improviser.pronouns.possessive" v-on:keyup="addImproviserSlot"></td>
-        </tr >
+  <div class="container">
+    <div class="row">
+      <div class="controls three columns">
+        <h6>Screen Controls</h6>
+        <button v-on:click="openScreen">Open Screen</button>
+        <hr>
+        <button :class="{'button-primary': showStep == 'boot'}" v-on:click="step('boot')">Boot</button>
+        <button :class="{'button-primary': showStep == 'intro'}" v-on:click="step('intro')">Intro</button>
+        <button :class="{'button-primary': showStep == 'rules'}" v-on:click="step('rules')">Rules</button>
+        <button :class="{'button-primary': showStep == 'nothing'}" v-on:click="step('nothing')">Stop Show</button>
+        <hr>
+        <button :class="{'button-primary': showStep == 'simulate'}" v-on:click="step('simulate')">Simulate</button>
+      </div>
+      <div class="nine columns">
+        <h6>Improvisers</h6>
+        <table class='u-full-width'>
+          <tr>
+            <td>Name</td>
+            <td>Subjective Pronoun</td>
+            <td>Objective Pronoun</td>
+            <td>Possessive Pronoun</td>
+          </tr>
+          <tr v-for="improviser, i in improvisers">
+            <td><input type="text" v-model="improviser.name" v-on:keyup="addImproviserSlot"></td>
+            <td><input type="text" v-model="improviser.pronouns.subjective" v-on:keyup="addImproviserSlot"></td>
+            <td><input type="text" v-model="improviser.pronouns.objective" v-on:keyup="addImproviserSlot"></td>
+            <td><input type="text" v-model="improviser.pronouns.possessive" v-on:keyup="addImproviserSlot"></td>
+          </tr >
+        </table>
+        <div class="row">
+          <label for="performance-duration">Duration (minutes)</label>
+          <input type="number" id="performance-duration" v-model="performanceDuration">
 
-      </table>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -34,6 +42,7 @@
 import _ from 'lodash'
 
 var data = {
+  performanceDuration: 20,
   improvisers: [
     {
       name: '',
@@ -55,10 +64,9 @@ export default {
   },
 
   mounted() {
-		this.screen = window.open('/screen');
+		// this.screen = window.open('/screen');
 
     window.onmessage = ({ showStep }) => {
-      console.log('HOME', showStep)
       if (!showStep) return;
 
       this.showStep = showStep;
@@ -66,12 +74,18 @@ export default {
   },
 
   methods: {
+    openScreen() {
+      this.screen = window.open('/screen')
+    },
+
     step(message) {
       this.screen.postMessage({
         step: message,
-        improvisers: this.improvisers.filter(improviser => improviser.name.length > 0)
+        improvisers: this.improvisers.filter(improviser => improviser.name.length > 0),
+        performanceDuration: this.performanceDuration,
       })
     },
+
     addImproviserSlot(e) {
       console.log('addImproviserSlot')
       if (this.improvisers[this.improvisers.length - 1].name.length > 0) {
@@ -90,25 +104,9 @@ export default {
 </script>
 
 <style lang='scss'>
-.home {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  display: flex;
-  justify-content: space-around;
-}
-
-#controls {
-  display: flex;
-  flex-direction: column;
-  width: 150px;
+.controls {
   button {
-    position: relative;
-    margin: 10px;
-    height: 30px;
-    font-size: 20px;
-    &.running {
-      background-color: red;
-      color: white;
-    }
+    width: 100%;
   }
 }
 </style>
