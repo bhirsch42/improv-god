@@ -52,7 +52,7 @@
 
 	export default {
 		name: 'Simulation',
-		props: ['ruleGens', 'names', 'improvisers'],
+		props: ['ruleGens', 'names', 'improvisers', 'performanceDuration'],
 		data() {
 			return data;
 		},
@@ -78,7 +78,7 @@
 			data.ai = new RuleAI({
 				improvisers: this.improvisers,
 				ruleData: this.ruleGens,
-				entrancesAndExits: true,
+				performanceDuration: this.performanceDuration,
 				addRule (rule) {
 					data.actions.push({
 						action: "addRule",
@@ -114,20 +114,6 @@
 					})
 					return Promise.resolve()
 				},
-				addImprovisers (improvisers) {
-					data.actions.push({
-						action: "addImprovisers",
-						ruleText: improvisers.map(o => o.name).join(', ')
-					})
-					return Promise.resolve()
-				},
-				removeImprovisers (improvisers) {
-					data.actions.push({
-						action: "removeImprovisers",
-						ruleText: improvisers.map(o => o.name).join(', ')
-					})
-					return Promise.resolve()
-				}
 			})
 			simulateShow()
 		}

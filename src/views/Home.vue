@@ -3,14 +3,14 @@
     <div class="row">
       <div class="controls three columns">
         <h6>Screen Controls</h6>
-        <button v-on:click="openScreen">Open Screen</button>
+        <button class="button-primary" v-on:click="openScreen">Open Screen</button>
         <hr>
-        <button :class="{'button-primary': showStep == 'boot'}" v-on:click="step('boot')">Boot</button>
-        <button :class="{'button-primary': showStep == 'intro'}" v-on:click="step('intro')">Intro</button>
-        <button :class="{'button-primary': showStep == 'rules'}" v-on:click="step('rules')">Rules</button>
-        <button :class="{'button-primary': showStep == 'nothing'}" v-on:click="step('nothing')">Stop Show</button>
+        <button v-on:click="step('boot')">Boot</button>
+        <button v-on:click="step('intro')">Intro</button>
+        <button v-on:click="step('rules')">Rules</button>
+        <button v-on:click="step('nothing')">Stop Show</button>
         <hr>
-        <button :class="{'button-primary': showStep == 'simulate'}" v-on:click="step('simulate')">Simulate</button>
+        <button v-on:click="step('simulate')">Simulate</button>
       </div>
       <div class="nine columns">
         <h6>Improvisers</h6>
@@ -82,12 +82,11 @@ export default {
       this.screen.postMessage({
         step: message,
         improvisers: this.improvisers.filter(improviser => improviser.name.length > 0),
-        performanceDuration: this.performanceDuration,
+        performanceDuration: parseFloat(this.performanceDuration),
       })
     },
 
     addImproviserSlot(e) {
-      console.log('addImproviserSlot')
       if (this.improvisers[this.improvisers.length - 1].name.length > 0) {
         this.improvisers.push({
           name: '',

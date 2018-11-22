@@ -10,7 +10,7 @@
       <Rules :ruleGens="rules" :improvisers="improvisers" :performanceDuration="performanceDuration"></Rules>
     </div>
     <div v-if="step.current == 'simulate'">
-      <Simulation :ruleGens="rules" :names="names" :improvisers="improvisers"></Simulation>
+      <Simulation :ruleGens="rules" :names="names" :improvisers="improvisers" :performanceDuration="performanceDuration"></Simulation>
     </div>
   </div>
 </template>
@@ -47,7 +47,7 @@ export default {
   mounted() {
     parent.onmessage = ({ data }) => {
       console.log('SCREEN', data)
-      if (!data.improvisers.length > 0) return;
+      if (!(data.improvisers && data.improvisers.length > 0)) return;
 
       let s = data.showStep;
 

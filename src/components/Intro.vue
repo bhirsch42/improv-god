@@ -19,7 +19,8 @@
 		},
 		mounted() {
 			var delays = [
-				[6000, `Welcome to Action Show. I will be in control for the next ${this.performanceDuration} minutes.`],
+				[5000, `Welcome to Action Show Black Friday Door Busters.`],
+				[4000, `I will be in control for the next ${this.performanceDuration} minutes.`],
 				[5600, "I was built by your comedy scientists to create the perfect improv show."],
 				[3000, 'Your comedy scientists have been...'],
 				[2000, '...dealt with.'],
@@ -36,7 +37,7 @@
 			})
 
 			delays = delays.concat([
-				[4000, "You have five seconds to get a location."],
+				[4000, "You have five seconds to get a suggestion."],
 				[1000, "5"],
 				[1000, "4"],
 				[1000, "3"],
