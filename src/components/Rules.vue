@@ -2,7 +2,7 @@
   <div id="rules">
     <div v-if="step == 'board'">
       <div id="board-title">
-        Active Rules
+        Rules
       </div>
       <div id="board">
         <div v-for="rule in rules">
@@ -57,10 +57,10 @@
             {{ closerText }}
           </TypeAndSay>
         </div>
-        <div v-if="closerStep == 'playing out'">
+        <div v-if="closerStep == 'playing out'" class="big-message">
           &lt;playing you out&gt;
         </div>
-        <div v-if="closerStep == 'lights down'">
+        <div v-if="closerStep == 'lights down'" class="big-message">
           Lights down
         </div>
         <div v-if="closerStep == 'advertise'">
@@ -275,12 +275,15 @@ function closeShow() {
       data.closerStep = 'lights down'
     }, 22000)
     setTimeout(() => {
+      data.closerStep = ''
+    }, 25000)
+    setTimeout(() => {
       endSong.play()
       data.closerStep = 'advertise'
       setInterval(() => {
         data.adMessage = data.adMessage + ' like us on facebook.com/improvgod'
       }, 510)
-    }, 32000)
+    }, 35000)
   }
 
   data.step = 'closer';
@@ -331,6 +334,18 @@ export default {
     padding: 15px;
   }
 
+  .big-message {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10vh;
+  }
+
   #rules {
     font-size: 60px;
     padding: 30px;
@@ -339,27 +354,28 @@ export default {
   }
 
   #board-title {
-    position: absolute;
-    top: 30px;
+    position: fixed;
+    top: 0;
     left: 0;
-    height: 8vh;
-
-    font-size: 10vh;
-    padding-bottom: 5px;
-    margin-left: 30px;
-    border-bottom: 1vh solid $green;
+    height: 100vh;
+    width: 100vw;
+    font-size: 40vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: .2;
   }
 
   #board {
-    position: absolute;
-    padding-top: 30px;
-    top: 10vh;
+    position: fixed;
+    top: 0;
     width: 100vw;
     left: 0;
-    height: 90vh;
+    height: 100vh;
     display: flex;
     flex-wrap: wrap;
     align-content: flex-start;
+    justify-content: center;
   }
 
   .rule {
@@ -368,6 +384,7 @@ export default {
     margin-top: 30px;
     margin-left: 30px;
     font-size: 80px;
+    background-color: black;
   }
 
   .removing {
@@ -407,7 +424,7 @@ export default {
     height: 100vh;
     justify-content: center;
     align-items: center;
-    position: absolute;
+    position: fixed;
     top: 0;
     right: 0;
     font-size: 240px;
