@@ -19,7 +19,7 @@
 		},
 		mounted() {
 			var delays = [
-				[5000, `Welcome to Action Show Black Friday Door Busters.`],
+				[2500, `Welcome to the improv show.`],
 				[4000, `I will be in control for the next ${this.performanceDuration} minutes.`],
 				[5600, "I was built by your comedy scientists to create the perfect improv show."],
 				[3000, 'Your comedy scientists have been...'],
