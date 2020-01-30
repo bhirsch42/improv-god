@@ -1,7 +1,7 @@
 <template>
   <div id="screen">
     <div v-if="step.current == 'boot'">
-      <BootAnimation :showStep="step"></BootAnimation>
+      <BootAnimation :showStep="step" :subtitle="subtitle"></BootAnimation>
     </div>
     <div v-if="step.current == 'intro'">
       <Intro :names="names" :performanceDuration="performanceDuration" :step="step"></Intro>
@@ -46,7 +46,6 @@ export default {
   },
   mounted() {
     parent.onmessage = ({ data }) => {
-      console.log('SCREEN', data)
       if (!(data.improvisers && data.improvisers.length > 0)) return;
 
       let s = data.showStep;
@@ -54,7 +53,7 @@ export default {
       this.step.set(data.step);
       this.improvisers = data.improvisers;
       this.performanceDuration = data.performanceDuration;
-      console.log(this.performanceDuration)
+      this.subtitle = data.subtitle;
       this.names = data.improvisers.map(improviser => improviser.name);
 
       if (s != 'nothing' && this.step.current == 'nothing') {

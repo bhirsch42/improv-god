@@ -28,8 +28,7 @@ Simulating montage...
     </div>
 
     <div id="subtitle" v-bind:class="{inverted: titleInverted}" v-if="step == 'subtitle'">
-      <div>PRESENTED BY</div>
-      <div>ACTION SHOW</div>
+      {{ subtitle }}
     </div>
   </div>
 </template>
@@ -85,7 +84,7 @@ export default {
     TypeWriter,
     AsciiImage
   },
-  props: ['showStep'],
+  props: ['showStep', 'subtitle'],
   data() {
     return data
   },
@@ -122,24 +121,31 @@ export default {
       this.step = 'title'
       sounds.impact.play()
     }, 15000)
-    setTimeout(() => {
-      this.step = 'subtitle'
-      sounds.impact.play()
-    }, 18000)
-    let tempOffset = 3000
+
+    let subtitleOffset = 0;
+
+    if (this.subtitle && this.subtitle.length > 0) {
+      setTimeout(() => {
+        this.step = 'subtitle'
+        sounds.impact.play()
+      }, 18000)
+
+      subtitleOffset = 3000;
+    }
+
     setTimeout(() => {
       this.titleInverted = true
       sounds.tinyglitch01.play();
-    }, 18000 + tempOffset)
+    }, 18000 + subtitleOffset)
     setTimeout(() => {
       this.step = 'greenFlash'
-    }, 18100 + tempOffset)
+    }, 18100 + subtitleOffset)
     setTimeout(() => {
       this.step = 'nothing'
-    }, 18300 + tempOffset)
+    }, 18300 + subtitleOffset)
     setTimeout(() => {
       this.showStep.set('intro');
-    }, 19500 + tempOffset)
+    }, 19500 + subtitleOffset)
   }
 
 }
@@ -190,6 +196,7 @@ export default {
 
 #subtitle {
   font-size: 30vh !important;
+  text-align: center;
 }
 
 #green-flash {
